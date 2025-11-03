@@ -18,11 +18,19 @@ class Game:
                 indexes.append(i)
         
         return tuple(indexes)
-                
+
+    def game_ended(self) -> bool:
+        if self.empty_space == ():
+            return True
+        else:
+            return False        
 
     def simulate_move(self, index, player):
         self.sim_board = self.board
         legal_moves = self.empty_space
+        if legal_moves == ():
+            print("Game Ended")
+            return None
         if index not in legal_moves:
             raise Exception("Illegal move: " + index+"! Legal moves are "+ legal_moves)
         self.sim_board[index] = player
@@ -37,6 +45,9 @@ class Game:
     
     def perform_move(self, index, player):
         legal_moves = self.empty_space
+        if legal_moves == ():
+            print("Game Ended")
+            return None
         if index not in legal_moves:
             raise Exception("Illegal move: " + index+"! Legal moves are "+ legal_moves)
         self.board[index] = player
