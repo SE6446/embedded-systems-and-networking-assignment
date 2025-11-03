@@ -11,3 +11,8 @@ winget install --id GitHub.cli
 # Reboot the console, just close and reopen the app
 gh auth login
 ```
+
+Be sure to work in the dev branches using git switch.
+```powershell
+git switch dev-engine
+```
