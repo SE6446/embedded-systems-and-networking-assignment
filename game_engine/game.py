@@ -5,14 +5,14 @@ class Game:
 
     def __init_board(self) -> list[str]:
         board: list[str] = []
-        for _ in range(8):
+        for _ in range(9):
             board.append("")
         return board
 
     def empty_space(self) -> tuple[int, ...]:
         """Returns the indexes of empty spaces on the board."""
         indexes: list[int] = []
-        for i in range(len(self.board) - 1):
+        for i in range(len(self.board)):
             if self.board[i] == "":
                 indexes.append(i)
 
@@ -23,8 +23,8 @@ class Game:
         legal_moves = self.empty_space()
         if index not in legal_moves:
             raise Exception(
-                "Illegal move: " + index + "! Legal moves are " + legal_moves  # pyright: ignore[reportUnknownArgumentType, reportOperatorIssue]
-            )  # My parser flags an error here even though it should be vaild.
+                "Illegal move: " + str(index) + "! Legal moves are " + str(legal_moves)
+            )
         self.sim_board[index] = player
 
     def display_board(self):
@@ -37,7 +37,7 @@ class Game:
         legal_moves = self.empty_space()
         if index not in legal_moves:
             raise Exception(
-                "Illegal move: " + index + "! Legal moves are " + legal_moves  # pyright: ignore[reportUnknownArgumentType, reportOperatorIssue]
+                "Illegal move: " + str(index) + "! Legal moves are " + str(legal_moves)
             )
         self.board[index] = player
 
@@ -84,3 +84,68 @@ class Game:
             status = True
 
         return status
+
+    # Deepseek made this cause I was lazy
+    def display(self):
+        for i in range(3):
+            row = ""
+            for j in range(3):
+                index = i * 3 + j
+                cell = self.board[index]
+                if cell == "":
+                    row += " "
+                else:
+                    row += cell
+                if j < 2:
+                    row += " | "
+            print(row)
+            if i < 2:
+                print("-" * 9)
+
+
+# Adding a test game into __main__ for testing purposes, this won't run when imported
+if __name__ == "__main__":
+    game: Game = Game()
+    game.display()
+    while (
+        not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+    ):
+        print("Player X turn.")
+        x = int(input("Input x: ")) - 1
+        if x >= 3:
+            x = 2
+        elif x <= -1:
+            x = 0
+        y = int(input("Input y: ")) - 1
+        if y >= 3:
+            y = 2
+        elif y <= -1:
+            y = 0
+        index = x + 3 * y
+        game.perform_move(index, "x")
+        game.display()
+        if game.is_won("x") or len(game.empty_space()) == 0:
+            break
+        print("Player O turn.")
+        x = int(input("Input x: ")) - 1
+        if x >= 3:
+            x = 2
+        elif x <= -1:
+            x = 0
+        y = int(input("Input y: ")) - 1
+        if y >= 3:
+            y = 2
+        elif y <= -1:
+            y = 0
+        index = x + 3 * y
+        game.perform_move(index, "o")
+        game.display()
+        if game.is_won("x") or len(game.empty_space()) == 0:
+            break
+    print("Game over!")
+    if game.is_won("x"):
+        print("X wins!")
+    elif game.is_won("o"):
+        print("O wins!")
+    else:
+        print("Draw!")
