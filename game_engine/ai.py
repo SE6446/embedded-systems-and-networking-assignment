@@ -5,7 +5,7 @@ class AI:
         self.game = game
 
     def minimax(self,human,ai):
-        if self.game.game_ended:
+        if len(self.game.empty_space()) == 0:
             return self.score(human,ai)
         scores = []
         moves = []
