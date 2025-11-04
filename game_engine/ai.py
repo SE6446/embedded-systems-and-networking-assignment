@@ -10,6 +10,10 @@ class AI:
         scores = []
         moves = []
 
+        legal_moves = self.game.empty_space
+
+
+
 
     def score(self, human:str, ai:str):
         if self.game.is_won(human):
@@ -18,3 +22,4 @@ class AI:
             return 1
         else:
             return 0
+        
