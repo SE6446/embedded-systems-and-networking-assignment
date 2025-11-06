@@ -1,7 +1,10 @@
+from random import randint
+
+
 class Game:
     def __init__(self) -> None:
         self.board: list[str] = self.__init_board()
-        self.sim_board: list[str] = []
+        self.sim_boards: list[list[str]] = [self.board]
 
     def __init_board(self) -> list[str]:
         board: list[str] = []
@@ -9,29 +12,30 @@ class Game:
             board.append("")
         return board
 
-    def empty_space(self) -> tuple[int, ...]:
+    def empty_space(self, sim:bool = False) -> tuple[int, ...]:
         """Returns the indexes of empty spaces on the board."""
         indexes: list[int] = []
-        for i in range(len(self.board)):
+        for i in range(len(self.board if not sim else self.sim_boards)):
             if self.board[i] == "":
                 indexes.append(i)
 
         return tuple(indexes)
 
-    def simulate_move(self, index: int, player: str):
-        self.sim_board = self.board
+    def simulate_move(self, index: int, player: str, simulation:int) -> None:
         legal_moves = self.empty_space()
         if index not in legal_moves:
             raise Exception(
                 "Illegal move: " + str(index) + "! Legal moves are " + str(legal_moves)
             )
-        self.sim_board[index] = player
-
-    def display_board(self):
-        for i in range(8):
-            string = self.board[i]
-            if i == 2 or i == 5 or i == 8:
-                string = string + "\n"
+        self.sim_boards[simulation][index] = player
+    
+    def reset_sim(self, simulation:int) -> None:
+        _ = self.sim_boards.pop(simulation)
+    
+    def start_simulation(self,base_simulation:int = 0) -> int:
+        """Starts a new simulation and returns it's index."""
+        self.sim_boards.append(list[str](self.sim_boards[base_simulation]))
+        return len(self.sim_boards)-1
 
     def perform_move(self, index: int, player: str):
         legal_moves = self.empty_space()
@@ -55,7 +59,7 @@ class Game:
         returns:
         boolean: true if won, false if not.
         """
-        board = self.board if not use_sim else self.sim_board
+        board = self.board if not use_sim else self.sim_boards
         status = False
 
         if player != "x" and player != "o":
@@ -101,6 +105,19 @@ class Game:
             print(row)
             if i < 2:
                 print("-" * 9)
+    
+
+    def mature_game(self, turns:int=2) -> None:
+        for _ in range(turns):
+            randx = randint(0,8)
+            while self.board[randx] != "":
+                randx = randint(0,8)
+            self.board[randx] = "x"
+            rando = randint(0,8)
+            while self.board[rando] != "":
+                rando = randint(0,8)
+            self.board[rando] = "o"
+
 
 
 # Adding a test game into __main__ for testing purposes, this won't run when imported
