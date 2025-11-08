@@ -119,6 +119,25 @@ class Game:
             self.board[rando] = "o"
 
 
+class Cursor:
+    def __init__(self) -> None:
+        self.position: int = 0 # Index on the board from 0-8
+    
+    def move_to(self, i:int,j:int) -> None:
+        if i < 0:
+            i = 0
+        elif i > 2:
+            i = 2
+        if j < 0:
+            j = 0
+        elif j > 2:
+            j = 2
+        self.position = i + 3 * j
+    
+    def get_position(self) -> int:
+        return self.position
+
+
 
 # Adding a test game into __main__ for testing purposes, this won't run when imported
 if __name__ == "__main__":
