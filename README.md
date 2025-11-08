@@ -22,7 +22,7 @@ python -m venv .\venv # This creates a virtual environment, it helps keep our si
 
 .\venv\Scripts\activate\ # This tells the command line 'hey, we're working in the virtual environment now
 
-pip install -r requirements.txt # This installs all the packages listed in environment.txt
+pip install -r requirements.txt --target typings # This installs all the packages listed in environment.txt
 
 deactivate #This tells the command line we are no longer working in the virtual environment
 ```

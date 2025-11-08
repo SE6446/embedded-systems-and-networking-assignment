@@ -209,8 +209,9 @@ __marimo__/
 # Micro Python
 .micropico
 /.vscode
+/typings
 
-# venv
+# venv oopsies
 pyvenv.cfg
 /Scripts
 /Include
