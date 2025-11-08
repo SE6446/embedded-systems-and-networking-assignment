@@ -210,3 +210,7 @@ __marimo__/
 .micropico
 /.vscode
 
+# venv
+pyvenv.cfg
+/Scripts
+/Include
