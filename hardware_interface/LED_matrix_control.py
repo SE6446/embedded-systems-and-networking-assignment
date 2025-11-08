@@ -89,6 +89,12 @@ def update_matrix(matrix:list[list[int]]) -> None:
         #We wait a moment otherwise the world will explode! ...Or the LEDs will flicker.
         sleep(2)
 
+if __name__ == "__main__":
+    try:
+        while True:
+            update_matrix([[1,2,1],[0,3,0],[1,2,1]])
+    except KeyboardInterrupt:
+        clear_matrix()
 
 
     
