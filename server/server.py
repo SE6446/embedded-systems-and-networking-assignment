@@ -71,6 +71,8 @@ def main():
     entryList: list[Entry] = readFile("./server/testfile.txt")
     print("Entries read from file:")
     print(entryList)
+    print("Formatted:")
+    print(str(entryList[0]))  # print first entry as a test
 
 if __name__ == "__main__":
     main()
