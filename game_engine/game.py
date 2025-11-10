@@ -103,26 +103,36 @@ class Game:
                 print("-" * 9)
 
 class InfoSaving:
-
+    textFileDirectory:str = ""
+    
     # copied over from server code
     # each record will be an object of this class
-    class Entry(object):
+    class Entry:
         name:str
         wins:int
         losses:int
+        def __init__(self) -> None:
+            # Default initialisation for completeness
+            self.name = ""
+            self.wins = 0
+            self.losses = 0
 
-    # turn file into an useable list of objects
+        def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
+            return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
+
     # turn a text file with each record split by a line and the data split by commas into an array of Entry
-    def readFile(textFile:str):
-        entries = []
+    def readFile():
+        entries:list[Entry] = []
 
-        textFile = open(textFile, "r")
+        fileWrapper = open(textFileDirectory, "r")
         
         # get each line as an individual string in a list
-        lines = textFile.read().split('\n')
+        lines = fileWrapper.read().split('\n')
+
+        fileWrapper.close() #Remember to close the file after reading!
 
         # initialise the array in which the individual data will be stored
-        data = []
+        data: list[list[str]] = []
         
         # for every line of the text fine
         for i in lines:
@@ -135,7 +145,7 @@ class InfoSaving:
         # for each line
         for i in data:
             # create a new entry for a temporary store the information
-            newEntry = Entry()
+            newEntry: Entry = Entry()
 
             # for each piece of data
             for j in i:
@@ -158,7 +168,8 @@ class InfoSaving:
             entries.append(newEntry)
 
         return entries
-    
+
+    # check to see if there is a record with a matching name already in the list, return the position if there is.  
     def checkForExistingPlayer(entryList, name:str):
         # to keep the position in the array
         counter:int = 0
@@ -176,8 +187,30 @@ class InfoSaving:
         # -1 being returned means that there was not a matching record found in the array 
         return -1
 
+    def writeListToFile():
+        #ToDo
+        
+    def addScore(name:str, isWin:bool):
+        entriesList = readFile(entriesList)
 
-    
+        arrayPosition = checkForExistingPlayer(entriesList, name) 
+
+        if (arrayPosition == -1):
+            newEntry:Entry
+            newEntry.name = "input method unknown as of now"
+            entriesList.append(newEntry)
+            arrayPosition = len(entriesList) - 1
+
+        if (isWin):
+            entriesList[arrayPosition].wins = entriesList[arrayPosition].wins + 1
+        else:
+            entriesList[arrayPosition].losses = entriesList[arrayPosition].losses + 1
+        
+        writeListToFile(entriesList)
+
+
+
+
 
 
 # Adding a test game into __main__ for testing purposes, this won't run when imported
