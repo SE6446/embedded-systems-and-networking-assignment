@@ -1,3 +1,4 @@
+
 from machine import Pin  
 from utime import sleep_ms as sleep  # pyright: ignore[reportUnknownVariableType]
 
@@ -106,9 +107,20 @@ if __name__ == "__main__":
                 [1,2,1]])
             sleep(3000)
             update_matrix([
-                [1,0,1],
-                [2,3,2],
-                [1,0,1]])
+                [0,0,0],
+                [0,0,0],
+                [0,0,0]])
+            sleep(3000)
+            update_matrix([
+                [3,3,3],
+                [3,3,3],
+                [3,3,3]])
+            sleep(3000)
+            update_matrix([
+                [0,0,1],
+                [0,2,0],
+                [1,0,0]
+            ])
             sleep(3000)
     except KeyboardInterrupt:
         clear_matrix()
