@@ -58,6 +58,6 @@ def readFile(textFile:str):
 def main():
     # all entries will be stored in this list
     # process file into this array
-    entryList = readFile("./server/testfile.txt")
+    entryList = readFile("./server/testfile.txt") # currently a temporary file (not pushed to repository)
 
 main()
