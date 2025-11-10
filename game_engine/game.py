@@ -134,6 +134,11 @@ class Cursor:
             j = 2
         self.position = i + 3 * j
     
+    def to_vector(self) -> tuple[int,int]:
+        x = self.position % 3
+        y = self.position // 3
+        return (x,y)
+    
     def get_position(self) -> int:
         return self.position
 
@@ -143,41 +148,73 @@ class Cursor:
 if __name__ == "__main__":
     game: Game = Game()
     game.display()
-    while (
-        not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
-    ):
-        print("Player X turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "x")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
-        print("Player O turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "o")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
+    if (input("Use Cursor? (y/n): ") == "n"):
+        while (
+            not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+        ):
+            print("Player X turn.")
+            x = int(input("Input x: ")) - 1
+            if x >= 3:
+                x = 2
+            elif x <= -1:
+                x = 0
+            y = int(input("Input y: ")) - 1
+            if y >= 3:
+                y = 2
+            elif y <= -1:
+                y = 0
+            index = x + 3 * y
+            game.perform_move(index, "x")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+            print("Player O turn.")
+            x = int(input("Input x: ")) - 1
+            if x >= 3:
+                x = 2
+            elif x <= -1:
+                x = 0
+            y = int(input("Input y: ")) - 1
+            if y >= 3:
+                y = 2
+            elif y <= -1:
+                y = 0
+            index = x + 3 * y
+            game.perform_move(index, "o")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+    else:
+        while (
+            not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+        ):
+            cursor: Cursor = Cursor()
+            print("Player X turn.")
+            print("Cursor at positions: "+ str(cursor.to_vector()))
+            indexes: list[int] = [int(input("Input i (0-3): "))-1, int(input("Input j (0-3): "))-1]
+            cursor.move_to(indexes[0], indexes[1])
+            index: int = cursor.get_position()
+            if index < 0:
+                index = 0
+            elif index > 8:
+                index = 8
+            game.perform_move(index, "x")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+            print("Player O turn.")
+            print("Cursor at positions: "+ str(cursor.to_vector()))
+            indexes = [int(input("Input i (0-3): "))-1, int(input("Input j (0-3): "))-1]
+            cursor.move_to(indexes[0], indexes[1])
+            index = cursor.get_position()
+            if index < 0:
+                index = 0
+            elif index > 8:
+                index = 8
+            game.perform_move(index, "o")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
     print("Game over!")
     if game.is_won("x"):
         print("X wins!")
