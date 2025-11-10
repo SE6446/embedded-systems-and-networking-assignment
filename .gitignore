@@ -213,3 +213,4 @@ __marimo__/
 /typings
 /venv
 
+/server/test*.txt
