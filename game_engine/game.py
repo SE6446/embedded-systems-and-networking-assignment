@@ -105,6 +105,10 @@ class Game:
 class InfoSaving:
     textFileDirectory:str = ""
     
+    def __init__(self) -> None:
+        # Default initialisation for completeness
+        self.textFileDirectory = ""
+
     # copied over from server code
     # each record will be an object of this class
     class Entry:
@@ -121,10 +125,10 @@ class InfoSaving:
             return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
 
     # turn a text file with each record split by a line and the data split by commas into an array of Entry
-    def readFile():
-        entries:list[Entry] = []
+    def readFile(self):
+        entries:list[InfoSaving.Entry] = []
 
-        fileWrapper = open(textFileDirectory, "r")
+        fileWrapper = open(InfoSaving.textFileDirectory, "r")
         
         # get each line as an individual string in a list
         lines = fileWrapper.read().split('\n')
@@ -145,7 +149,7 @@ class InfoSaving:
         # for each line
         for i in data:
             # create a new entry for a temporary store the information
-            newEntry: Entry = Entry()
+            newEntry:InfoSaving.Entry = InfoSaving.Entry()
 
             # for each piece of data
             for j in i:
@@ -187,16 +191,26 @@ class InfoSaving:
         # -1 being returned means that there was not a matching record found in the array 
         return -1
 
-    def writeListToFile():
-        #ToDo
+    def writeListToFile(entriesList:list[InfoSaving.Entry]):
+        textFormat = ""
+        with open(InfoSaving.textFileDirectory, "w") as textFile:
+            for i in entriesList:
+                textFormat = textFormat + i.name + ","
+                textFormat = textFormat + str(i.wins) + ","
+                textFormat = textFormat + str(i.losses) + ",\n"
+        
+            textFile.write(textFormat)
+
+        textFile.close()
+        
         
     def addScore(name:str, isWin:bool):
-        entriesList = readFile(entriesList)
+        entriesList = InfoSaving.readFile(InfoSaving.textFileDirectory)
 
-        arrayPosition = checkForExistingPlayer(entriesList, name) 
+        arrayPosition = InfoSaving.checkForExistingPlayer(entriesList, name) 
 
         if (arrayPosition == -1):
-            newEntry:Entry
+            newEntry:InfoSaving.Entry = InfoSaving.Entry()
             newEntry.name = "input method unknown as of now"
             entriesList.append(newEntry)
             arrayPosition = len(entriesList) - 1
@@ -206,7 +220,7 @@ class InfoSaving:
         else:
             entriesList[arrayPosition].losses = entriesList[arrayPosition].losses + 1
         
-        writeListToFile(entriesList)
+        InfoSaving.writeListToFile(entriesList)
 
 
 
@@ -214,48 +228,53 @@ class InfoSaving:
 
 
 # Adding a test game into __main__ for testing purposes, this won't run when imported
-if __name__ == "__main__":
-    game: Game = Game()
-    game.display()
-    while (
-        not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
-    ):
-        print("Player X turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "x")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
-        print("Player O turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "o")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
-    print("Game over!")
-    if game.is_won("x"):
-        print("X wins!")
-    elif game.is_won("o"):
-        print("O wins!")
-    else:
-        print("Draw!")
+#if __name__ == "__main__":
+#    game: Game = Game()
+#    game.display()
+#    while (
+#        not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+#    ):
+#        print("Player X turn.")
+#        x = int(input("Input x: ")) - 1
+#        if x >= 3:
+#            x = 2
+#        elif x <= -1:
+#            x = 0
+#        y = int(input("Input y: ")) - 1
+#        if y >= 3:
+#            y = 2
+#        elif y <= -1:
+#            y = 0
+#        index = x + 3 * y
+#        game.perform_move(index, "x")
+#        game.display()
+#        if game.is_won("x") or len(game.empty_space()) == 0:
+#            break
+#        print("Player O turn.")
+#        x = int(input("Input x: ")) - 1
+#        if x >= 3:
+#            x = 2
+#        elif x <= -1:
+#            x = 0
+#        y = int(input("Input y: ")) - 1
+#        if y >= 3:
+#            y = 2
+#        elif y <= -1:
+#            y = 0
+#        index = x + 3 * y
+#        game.perform_move(index, "o")
+#        game.display()
+#        if game.is_won("x") or len(game.empty_space()) == 0:
+#            break
+#    print("Game over!")
+#    if game.is_won("x"):
+#        print("X wins!")
+#    elif game.is_won("o"):
+#        print("O wins!")
+#    else:
+#        print("Draw!")
+
+test:InfoSaving = InfoSaving()
+InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
+test.textFileDirectory = "./game_engine/testfile.txt"
+test.addScore("a")
