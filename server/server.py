@@ -3,22 +3,32 @@
 #
 
 # each record will be an object of this class
-class Entry(object):
+class Entry:
     name:str
     wins:int
     losses:int
+    def __init__(self) -> None:
+        # Default initialisation for completeness
+        self.name = ""
+        self.wins = 0
+        self.losses = 0
+
+    def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
+        return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
 
 # turn a text file with each record split by a line and the data split by commas into an array of Entry
 def readFile(textFile:str):
-    entries = []
+    entries:list[Entry] = []
 
-    textFile = open(textFile, "r")
+    fileWrapper = open(textFile, "r")
     
     # get each line as an individual string in a list
-    lines = textFile.read().split('\n')
+    lines = fileWrapper.read().split('\n')
+
+    fileWrapper.close() #Remember to close the file after reading!
 
     # initialise the array in which the individual data will be stored
-    data = []
+    data: list[list[str]] = []
     
     # for every line of the text fine
     for i in lines:
@@ -31,7 +41,7 @@ def readFile(textFile:str):
     # for each line
     for i in data:
         # create a new entry for a temporary store the information
-        newEntry = Entry()
+        newEntry: Entry = Entry()
 
         # for each piece of data
         for j in i:
@@ -58,6 +68,9 @@ def readFile(textFile:str):
 def main():
     # all entries will be stored in this list
     # process file into this array
-    entryList = readFile("./server/testfile.txt")
+    entryList: list[Entry] = readFile("./server/testfile.txt")
+    print("Entries read from file:")
+    print(entryList)
 
-main()
+if __name__ == "__main__":
+    main()
