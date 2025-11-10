@@ -1,7 +1,10 @@
+from random import randint
+
+
 class Game:
     def __init__(self) -> None:
         self.board: list[str] = self.__init_board()
-        self.sim_board: list[str] = []
+        self.sim_boards: list[list[str]] = [self.board]
 
     def __init_board(self) -> list[str]:
         board: list[str] = []
@@ -9,29 +12,30 @@ class Game:
             board.append("")
         return board
 
-    def empty_space(self) -> tuple[int, ...]:
+    def empty_space(self, sim:bool = False) -> tuple[int, ...]:
         """Returns the indexes of empty spaces on the board."""
         indexes: list[int] = []
-        for i in range(len(self.board)):
+        for i in range(len(self.board if not sim else self.sim_boards)):
             if self.board[i] == "":
                 indexes.append(i)
 
         return tuple(indexes)
 
-    def simulate_move(self, index: int, player: str):
-        self.sim_board = self.board
+    def simulate_move(self, index: int, player: str, simulation:int) -> None:
         legal_moves = self.empty_space()
         if index not in legal_moves:
             raise Exception(
                 "Illegal move: " + str(index) + "! Legal moves are " + str(legal_moves)
             )
-        self.sim_board[index] = player
-
-    def display_board(self):
-        for i in range(8):
-            string = self.board[i]
-            if i == 2 or i == 5 or i == 8:
-                string = string + "\n"
+        self.sim_boards[simulation][index] = player
+    
+    def reset_sim(self, simulation:int) -> None:
+        _ = self.sim_boards.pop(simulation)
+    
+    def start_simulation(self,base_simulation:int = 0) -> int:
+        """Starts a new simulation and returns it's index."""
+        self.sim_boards.append(list[str](self.sim_boards[base_simulation]))
+        return len(self.sim_boards)-1
 
     def perform_move(self, index: int, player: str):
         legal_moves = self.empty_space()
@@ -55,7 +59,7 @@ class Game:
         returns:
         boolean: true if won, false if not.
         """
-        board = self.board if not use_sim else self.sim_board
+        board = self.board if not use_sim else self.sim_boards
         status = False
 
         if player != "x" and player != "o":
@@ -101,47 +105,116 @@ class Game:
             print(row)
             if i < 2:
                 print("-" * 9)
+    
+
+    def mature_game(self, turns:int=2) -> None:
+        for _ in range(turns):
+            randx = randint(0,8)
+            while self.board[randx] != "":
+                randx = randint(0,8)
+            self.board[randx] = "x"
+            rando = randint(0,8)
+            while self.board[rando] != "":
+                rando = randint(0,8)
+            self.board[rando] = "o"
+
+
+class Cursor:
+    def __init__(self) -> None:
+        self.position: int = 0 # Index on the board from 0-8
+    
+    def move_to(self, i:int,j:int) -> None:
+        if i < 0:
+            i = 0
+        elif i > 2:
+            i = 2
+        if j < 0:
+            j = 0
+        elif j > 2:
+            j = 2
+        self.position = i + 3 * j
+    
+    def to_vector(self) -> tuple[int,int]:
+        x = self.position % 3
+        y = self.position // 3
+        return (x,y)
+    
+    def get_position(self) -> int:
+        return self.position
+
 
 
 # Adding a test game into __main__ for testing purposes, this won't run when imported
 if __name__ == "__main__":
     game: Game = Game()
     game.display()
-    while (
-        not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
-    ):
-        print("Player X turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "x")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
-        print("Player O turn.")
-        x = int(input("Input x: ")) - 1
-        if x >= 3:
-            x = 2
-        elif x <= -1:
-            x = 0
-        y = int(input("Input y: ")) - 1
-        if y >= 3:
-            y = 2
-        elif y <= -1:
-            y = 0
-        index = x + 3 * y
-        game.perform_move(index, "o")
-        game.display()
-        if game.is_won("x") or len(game.empty_space()) == 0:
-            break
+    if (input("Use Cursor? (y/n): ") == "n"):
+        while (
+            not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+        ):
+            print("Player X turn.")
+            x = int(input("Input x: ")) - 1
+            if x >= 3:
+                x = 2
+            elif x <= -1:
+                x = 0
+            y = int(input("Input y: ")) - 1
+            if y >= 3:
+                y = 2
+            elif y <= -1:
+                y = 0
+            index = x + 3 * y
+            game.perform_move(index, "x")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+            print("Player O turn.")
+            x = int(input("Input x: ")) - 1
+            if x >= 3:
+                x = 2
+            elif x <= -1:
+                x = 0
+            y = int(input("Input y: ")) - 1
+            if y >= 3:
+                y = 2
+            elif y <= -1:
+                y = 0
+            index = x + 3 * y
+            game.perform_move(index, "o")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+    else:
+        while (
+            not game.is_won("x") and not game.is_won("o") and len(game.empty_space()) != 0
+        ):
+            cursor: Cursor = Cursor()
+            print("Player X turn.")
+            print("Cursor at positions: "+ str(cursor.to_vector()))
+            indexes: list[int] = [int(input("Input i (0-3): "))-1, int(input("Input j (0-3): "))-1]
+            cursor.move_to(indexes[0], indexes[1])
+            index: int = cursor.get_position()
+            if index < 0:
+                index = 0
+            elif index > 8:
+                index = 8
+            game.perform_move(index, "x")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
+            print("Player O turn.")
+            print("Cursor at positions: "+ str(cursor.to_vector()))
+            indexes = [int(input("Input i (0-3): "))-1, int(input("Input j (0-3): "))-1]
+            cursor.move_to(indexes[0], indexes[1])
+            index = cursor.get_position()
+            if index < 0:
+                index = 0
+            elif index > 8:
+                index = 8
+            game.perform_move(index, "o")
+            game.display()
+            if game.is_won("x") or len(game.empty_space()) == 0:
+                break
     print("Game over!")
     if game.is_won("x"):
         print("X wins!")
