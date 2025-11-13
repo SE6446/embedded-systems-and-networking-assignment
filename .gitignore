@@ -211,3 +211,6 @@ __marimo__/
 /.vscode
 
 /typings
+/venv
+
+/server/test*.txt
