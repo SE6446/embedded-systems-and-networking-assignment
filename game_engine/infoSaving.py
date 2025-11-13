@@ -89,12 +89,18 @@ class InfoSaving:
 
     def writeListToFile(entriesList:list[InfoSaving.Entry]):
         textFormat = ""
+
+        # open the text file that will be read into
         with open(InfoSaving.textFileDirectory, "w") as textFile:
+
+            # for every entry 
             for i in entriesList:
+                # add the contents to one large string with extra for formatting
                 textFormat = textFormat + i.name + ","
                 textFormat = textFormat + str(i.wins) + ","
                 textFormat = textFormat + str(i.losses) + "\n"
 
+            # remove an extra \n that would break the function if it was left in
             textFormat = textFormat[0:len(textFormat) - 1]
             textFile.write(textFormat)
 
@@ -102,16 +108,23 @@ class InfoSaving:
         
         
     def addScore(self, name:str, isWin:bool):
+
+        # get the file in the form of an array
         entriesList = InfoSaving.readFile(InfoSaving.textFileDirectory)
 
+        # find where in the array the desired player's record is, if it is not found, -1 is returned
         arrayPosition = InfoSaving.checkForExistingPlayer(entriesList, name) 
 
+        # add a new record with the new name
         if (arrayPosition == -1):
             newEntry:InfoSaving.Entry = InfoSaving.Entry()
             newEntry.name = name
             entriesList.append(newEntry)
+            
+            # amend array position so it is in line with the new record rather than -1
             arrayPosition = len(entriesList) - 1
 
+        # add score
         if (isWin):
             entriesList[arrayPosition].wins = entriesList[arrayPosition].wins + 1
         else:
