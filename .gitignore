@@ -210,3 +210,7 @@ __marimo__/
 .micropico
 /.vscode
 
+/typings
+/venv
+
+/server/test*.txt
