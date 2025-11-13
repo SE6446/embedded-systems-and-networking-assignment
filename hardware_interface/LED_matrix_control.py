@@ -31,102 +31,58 @@ def clear_matrix() -> None:
     clear_all_rows()
     clear_all_columns()
 
-def update_matrix(matrix:list[list[int]]) -> None:
-    """Update the matrix with the image from the input
-    
-    0 is off
-
-    1 is red
-
-    2 is green
-
-    3 is amber (red and green)
-
-    example:
-
-    [[1,2,1], # red, green, red
-
-    [0,3,0], # off, amber, off
-
-    [1,2,1]] # red, green, red
-    
-    """
-    clear_matrix()
-    # matrix validation
-    if len(matrix) != 3 or len(matrix[0]) != 3:
-        raise Exception(f"Parameter error: matrix shape is out of bounds. Number of rows: {len(matrix)}.\nNumber of columns: {len(matrix[0])}.\nExpected 3x3.")
-
+def update_matrix(matrix: list[list[int]]) -> None:
+    #Continuously refresh the matrix display.
     for i in range(3):
-        activated = False
+        clear_all_rows()
         for j in range(3):
-            
             state: int = matrix[i][j]
-            red_pin: Pin = col_pins[j*2+1]
-            green_pin: Pin = col_pins[j*2]
-            """Pins are common anode, so setting to low turns on the LED"""
+            red_pin: Pin = col_pins[j*2]      # Red pin
+            green_pin: Pin = col_pins[j*2+1]  # Green pin
 
-            #The five possible states
-            #OFF
-            if state == 0:
+            
+            if state == 0:  # OFF
                 red_pin.high()
                 green_pin.high()
-                
-            #RED
-            elif state==1:
+            elif state == 1:  # RED
                 red_pin.low()
                 green_pin.high()
-                activated = True
-            #GREEN
-            elif state == 2:
+            elif state == 2:  # GREEN
                 red_pin.high()
                 green_pin.low()
-                activated = True
-            #AMBER
-            elif state == 3:
+            elif state == 3:  # AMBER (both on)
                 red_pin.low()
                 green_pin.low()
-                activated = True
-            #FUCK
             else:
                 clear_matrix()
-                raise Exception(f"Invalid state: Expected a value between 0 and 3. Got {state}")
-        # 
-        if activated:
-            #We set this to high so that the ground pins activate and we get current
-            row_pins[i].high()
+                raise Exception(f"Invalid state: {state}")
 
-        #We wait a moment otherwise the world will explode! ...Or the LEDs will flicker.
+        # Turn on this row briefly
+        row_pins[i].high()
         sleep(2)
 
 if __name__ == "__main__":
     try:
+        # Define one or more frames
+        frame1 = [
+            [0, 0, 0],
+            [0, 2, 0],
+            [1, 0, 0]
+        ]
+
+        frame2 = [
+            [0, 0, 2],
+            [0, 2, 0],
+            [3, 0, 0]
+        ]
+
         while True:
-            update_matrix([
-                [1,2,1],
-                [0,3,0],
-                [1,2,1]])
-            sleep(3000)
-            update_matrix([
-                [0,0,0],
-                [0,0,0],
-                [0,0,0]])
-            sleep(3000)
-            update_matrix([
-                [3,3,3],
-                [3,3,3],
-                [3,3,3]])
-            sleep(3000)
-            update_matrix([
-                [0,0,1],
-                [0,2,0],
-                [1,0,0]
-            ])
-            sleep(3000)
+            # refreshes each frame for a short time
+            for _ in range(200):  
+                update_matrix(frame1)
+
+            for _ in range(200):  # refresh frame2
+                update_matrix(frame2)
+
     except KeyboardInterrupt:
         clear_matrix()
-
-
-    
-
-
-
