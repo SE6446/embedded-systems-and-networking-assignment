@@ -1,6 +1,8 @@
 import _thread
 import time
+
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
+
 
 def game_thread():
     while True:
@@ -11,11 +13,10 @@ def game_thread():
             __human_game()
         else:
             print("Invalid input, repeating...")
-        
 
-    
+
 def __ai_game():
-    #Instantiate the game
+    # Instantiate the game
     game: Game = Game()
     ai: AI = AI(game)
 
@@ -28,28 +29,30 @@ def __ai_game():
         # Player move
         move_x: int = int(input("Input x: ")) - 1
         move_y: int = int(input("Input y: ")) - 1
-        index: int = 3*move_y +move_x
+        index: int = 3 * move_y + move_x
         ai.game.perform_move(index, "x")
         print("##################")
         ai.game.display()
+        print(ai.game.to_led_matrix())
 
-        #print(ai.game.is_won("x"))
-        #print(ai.game.is_won("o"))
-        #print(len(ai.game.empty_space()) == 0)
+        # print(ai.game.is_won("x"))
+        # print(ai.game.is_won("o"))
+        # print(len(ai.game.empty_space()) == 0)
 
-
-        if (ai.game.is_won("x")
+        if (
+            ai.game.is_won("x")
             or ai.game.is_won("o")
             or len(ai.game.empty_space()) == 0
         ):
-            #print("break")
+            # print("break")
             break
 
         # AI move
-        _, index, _ = ai.minimax("x","o",1)
+        _, index, _ = ai.minimax("x", "o", 1)
         ai.game.perform_move(index, "o")
         print("##################")
         ai.game.display()
+        print(ai.game.to_led_matrix())
 
     ai.game.display()
     if ai.game.is_won("x"):
@@ -60,36 +63,27 @@ def __ai_game():
         print("Draw!")
 
 
-
-
 def __human_game():
     game = Game()
 
     game.display()
-    while (
-        not game.is_won("x")
-        or not game.is_won("o")
-        and len(game.empty_space()) >= 0
-    ):
+    while not game.is_won("x") or not game.is_won("o") and len(game.empty_space()) >= 0:
         print("Player X turn: ")
         move_x: int = int(input("Input x: ")) - 1
         move_y: int = int(input("Input y: ")) - 1
-        index: int = 3*move_y +move_x
+        index: int = 3 * move_y + move_x
         game.perform_move(index, "x")
         print("##################")
         game.display()
 
-        if (game.is_won("x")
-            or game.is_won("o")
-            or len(game.empty_space()) == 0
-        ):
-            #print("break")
+        if game.is_won("x") or game.is_won("o") or len(game.empty_space()) == 0:
+            # print("break")
             break
 
         print("Player O turn: ")
-        move_x= int(input("Input x: ")) - 1
-        move_y= int(input("Input y: ")) - 1
-        index= 3*move_y +move_x
+        move_x = int(input("Input x: ")) - 1
+        move_y = int(input("Input y: ")) - 1
+        index = 3 * move_y + move_x
         game.perform_move(index, "o")
     game.display()
     if game.is_won("x"):
@@ -99,7 +93,6 @@ def __human_game():
     else:
         print("Draw!")
 
-        
 
 def server_thread():
     pass
