@@ -1,5 +1,6 @@
 import _thread
 import time
+from random import uniform
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
 
@@ -8,14 +9,17 @@ def game_thread():
     while True:
         opponent: str = input("CPU (*) or Human (#): ")
         if opponent == "*":
-            __ai_game()
+            difficulty = int(input("Input difficulty: 1-3"))
+            while difficulty not in range(1, 4):
+                difficulty = int(input("WRONG!\nInput difficulty: 1-3"))
+            __ai_game(difficulty)
         elif opponent == "#":
             __human_game()
         else:
             print("Invalid input, repeating...")
 
 
-def __ai_game():
+def __ai_game(difficulty):
     # Instantiate the game
     game: Game = Game()
     ai: AI = AI(game)
@@ -48,11 +52,29 @@ def __ai_game():
             break
 
         # AI move
-        _, index, _ = ai.minimax("x", "o", 1)
+        _, best_index, _ = ai.minimax("x", "o", 1)
+        # Chance to blunder
+        # We make a weighted choice, defined by difficulty
+        legal_moves = ai.game.empty_space()
+        best_legal_move_index = legal_moves.index(best_index)
+        weights = [1 for _ in range(len(legal_moves))]
+        handicap = 1
+        if difficulty == 3:
+            handicap = 3
+        elif difficulty == 2:
+            handicap = 2
+        weights[best_legal_move_index] = handicap
+
+        index = random_choice(legal_moves, weights)
         ai.game.perform_move(index, "o")
         print("##################")
         ai.game.display()
+        if index != best_index:
+            print("Blunder!")
         print(ai.game.to_led_matrix())
+        print(
+            f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
+        )
 
     ai.game.display()
     if ai.game.is_won("x"):
@@ -61,6 +83,25 @@ def __ai_game():
         print("AI win")
     else:
         print("Draw!")
+
+
+def random_choice(items: list | tuple, weights: list[int]):
+    if len(items) != len(weights):
+        raise Exception(
+            f"Input Mistmatch: expected size {len(items)} but got {len(weights)}"
+        )
+
+    summed_weights = sum(weights)
+
+    r = uniform(0, summed_weights)
+
+    culmmative_weights = 0
+    for i, item in enumerate(items):
+        culmmative_weights += weights[i]
+        if r < culmmative_weights:
+            return item
+
+    return items[-1]  # Fallback.
 
 
 def __human_game():
