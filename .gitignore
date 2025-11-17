@@ -209,8 +209,16 @@ __marimo__/
 # Micro Python
 .micropico
 /.vscode
+/typings
 
+# venv oopsies
+pyvenv.cfg
+/Scripts
+/Include
 /typings
 /venv
 
 /server/test*.txt
+
+# .github
+/.github
