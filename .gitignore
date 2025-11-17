@@ -219,6 +219,7 @@ pyvenv.cfg
 /venv
 
 /server/test*.txt
+/game_engine/*.txt
 
 # .github
 /.github
