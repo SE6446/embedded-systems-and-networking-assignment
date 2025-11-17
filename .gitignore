@@ -219,3 +219,6 @@ pyvenv.cfg
 /venv
 
 /server/test*.txt
+
+# .github
+/.github
