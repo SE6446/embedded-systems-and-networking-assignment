@@ -65,24 +65,37 @@ if __name__ == "__main__":
     try:
         # Define one or more frames
         frame1 = [
-            [0, 0, 0],
-            [0, 2, 0],
-            [1, 0, 0]
+            [2, 2, 2],
+            [2, 2, 2],
+            [2, 2, 2]
         ]
 
         frame2 = [
-            [0, 0, 2],
-            [0, 2, 0],
-            [3, 0, 0]
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
         ]
+
+        frame3 = [
+            [3, 3, 3],
+            [3, 3, 3],
+            [3, 3, 3]
+        ]
+
 
         while True:
             # refreshes each frame for a short time
-            for _ in range(200):  
+            for _ in range(400):  
                 update_matrix(frame1)
 
-            for _ in range(200):  # refresh frame2
+
+            for _ in range(400):
                 update_matrix(frame2)
+
+            for _ in range(400):
+                update_matrix(frame3)
+
+
 
     except KeyboardInterrupt:
         clear_matrix()
