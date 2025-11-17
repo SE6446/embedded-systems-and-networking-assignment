@@ -32,6 +32,16 @@ def clear_matrix() -> None:
     clear_all_columns()
 
 def update_matrix(matrix: list[list[int]]) -> None:
+    """Update the LED matrix. 
+    
+    Parameter: matrix
+    
+    A 3x3 matrix.
+    
+    [[0,0,0],
+    [0,0,0],
+    [0,0,0]]
+    """
     #Continuously refresh the matrix display.
     for i in range(3):
         clear_all_rows()
@@ -55,7 +65,7 @@ def update_matrix(matrix: list[list[int]]) -> None:
                 green_pin.low()
             else:
                 clear_matrix()
-                raise Exception(f"Invalid state: {state}")
+                raise Exception(f"Invalid state. Expected a value between 0 and 3 inclusive. Got: {state}")
 
         # Turn on this row briefly
         row_pins[i].high()

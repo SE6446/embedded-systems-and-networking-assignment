@@ -215,3 +215,10 @@ __marimo__/
 pyvenv.cfg
 /Scripts
 /Include
+/typings
+/venv
+
+/server/test*.txt
+
+# .github
+/.github
