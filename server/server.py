@@ -1,78 +1,60 @@
-#
-# Not fully finished yet
-#
+import network 
+import socket
 
-# each record will be an object of this class
-class Entry:
-    name:str
-    wins:int
-    losses:int
-    def __init__(self) -> None:
-        # Default initialisation for completeness
-        self.name = ""
-        self.wins = 0
-        self.losses = 0
+from time import sleep  # pyright: ignore[reportUnknownVariableType]
 
-    def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
-        return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
+def connect(ssid:str|None = None, password:str|None = None) -> network.WLAN:
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid,password)
+    while wlan.isconnected() == False:
+        print("Waiting connection")
+        sleep(1)
+    ifconfig: tuple[str,str,str,str] = wlan.ifconfig()
+    print(f"Connected! ifconfig: IP:{ifconfig[0]}, Subnet mask {ifconfig[1]}, Gateway: {ifconfig[2]}, DNS: {ifconfig[3]}")
+    return wlan
 
-# turn a text file with each record split by a line and the data split by commas into an array of Entry
-def readFile(textFile:str):
-    entries:list[Entry] = []
+def open_socket(wlan:network.WLAN, port:int = 80):
+    ip: str = wlan.ifconfig()[0]
+    address: tuple[str, int] = (ip, port)
+    connection = socket.socket()
+    connection.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #reuse address
+    connection.bind(address)
+    connection.listen(1)
+    print(f'Listening on port: {port}')
+    print(connection)
+    return connection
 
-    fileWrapper = open(textFile, "r")
-    
-    # get each line as an individual string in a list
-    lines = fileWrapper.read().split('\n')
+def load_template()-> str:
+    raise NotImplementedError()
+    #TODO return the HTML tags to help construct the leaderboard itself.
+    return ""  # pyright: ignore[reportUnreachable]
 
-    fileWrapper.close() #Remember to close the file after reading!
+def create_webpage() -> str:
+    raise NotImplementedError()
+    #TODO How this works is that it takes the templates and contstructs the leaderboard and rest of the website
+    #See: https://stackoverflow.com/questions/44757222/transform-string-to-f-string
+    return ""  # pyright: ignore[reportUnreachable]
 
-    # initialise the array in which the individual data will be stored
-    data: list[list[str]] = []
-    
-    # for every line of the text fine
-    for i in lines:
-        # split up the line using commas as the separation mark
-        data.append(i.split(','))
-    
-    # initialise counter for getting the right column of data in the text file
-    counter = 0
+def serve(connection):
+    while True:
+        client = connection.accept()[0]
+        request = client.recv(1024)
+        request = str(request)
+        client.send(create_webpage())
+        client.close()
 
-    # for each line
-    for i in data:
-        # create a new entry for a temporary store the information
-        newEntry: Entry = Entry()
-
-        # for each piece of data
-        for j in i:
-            # reset counter so that it does not go out of range of the array (> number is the amount of columns - 1)
-            if (counter > len(i) - 1):
-                counter = 0
-        
-            # check counter position for column
-            if (counter == 0):
-                newEntry.name = j
-            elif counter == 1:
-                newEntry.wins = int(j)
-            else:
-                newEntry.losses = int(j)
-            # if any more columns are added then more elif statements need added
-            
-            counter = counter + 1
-        
-        # append new entry (row of data) to the list
-        entries.append(newEntry)
-
-    return entries
-
-def main():
-    # all entries will be stored in this list
-    # process file into this array
-    entryList: list[Entry] = readFile("./server/testfile.txt")
-    print("Entries read from file:")
-    print(entryList)
-    print("Formatted:")
-    print(str(entryList[0]))  # print first entry as a test
 
 if __name__ == "__main__":
-    main()
+    ssid = ""
+    password = ""
+
+    wlan = connect(ssid, password)
+    connection = open_socket(wlan)
+    while True:
+        client = connection.accept()[0]
+        request = client.recv(1024)
+        request = str(request)
+        client.send("Hi!")
+        client.close()
+
