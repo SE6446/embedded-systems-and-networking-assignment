@@ -22,9 +22,9 @@ class InfoSaving:
 
     # turn a text file with each record split by a line and the data split by commas into an array of Entry
     def readFile(self):
-        entries:list[InfoSaving.Entry] = []
+        entries:list = []  # pyright: ignore[reportMissingTypeArgument]
 
-        fileWrapper = open(InfoSaving.textFileDirectory, "r")
+        fileWrapper = open(self.textFileDirectory, "r")
         
         # get each line as an individual string in a list
         lines = fileWrapper.read().split('\n')
@@ -45,7 +45,7 @@ class InfoSaving:
         # for each line
         for i in data:
             # create a new entry for a temporary store the information
-            newEntry:InfoSaving.Entry = InfoSaving.Entry()
+            newEntry = self.Entry()
 
             # for each piece of data
             for j in i:
@@ -70,7 +70,7 @@ class InfoSaving:
         return entries
 
     # check to see if there is a record with a matching name already in the list, return the position if there is.  
-    def checkForExistingPlayer(entryList, name:str):
+    def checkForExistingPlayer(self, entryList, name:str):
         # to keep the position in the array
         counter:int = 0
 
@@ -87,7 +87,7 @@ class InfoSaving:
         # -1 being returned means that there was not a matching record found in the array 
         return -1
 
-    def writeListToFile(entriesList:list[InfoSaving.Entry]):
+    def writeListToFile(self, entriesList):
         textFormat = ""
 
         # open the text file that will be read into
@@ -110,10 +110,10 @@ class InfoSaving:
     def addScore(self, name:str, isWin:bool):
 
         # get the file in the form of an array
-        entriesList = InfoSaving.readFile(InfoSaving.textFileDirectory)
+        entriesList = self.readFile()
 
         # find where in the array the desired player's record is, if it is not found, -1 is returned
-        arrayPosition = InfoSaving.checkForExistingPlayer(entriesList, name) 
+        arrayPosition = self.checkForExistingPlayer(entriesList, name) 
 
         # add a new record with the new name
         if (arrayPosition == -1):
@@ -130,15 +130,17 @@ class InfoSaving:
         else:
             entriesList[arrayPosition].losses = entriesList[arrayPosition].losses + 1
         
-        InfoSaving.writeListToFile(entriesList)
+        self.writeListToFile(entriesList)
 
-#test:InfoSaving = InfoSaving()
-#InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
-#test.textFileDirectory = "./game_engine/testfile.txt"
 
-#test.addScore("a", True)
-#test.addScore("b", False)
-#test.addScore("c", True)
-#test.addScore("c", True)
-#test.addScore("c", False)
-#test.addScore((chars + digits), True)
+if __name__ == "__main__":
+    test:InfoSaving = InfoSaving()
+    InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
+    test.textFileDirectory = "./game_engine/testfile.txt"
+
+    test.addScore("a", True)
+    test.addScore("b", False)
+    test.addScore("c", True)
+    test.addScore("c", True)
+    test.addScore("c", False)
+    #test.addScore((chars + digits), True)
