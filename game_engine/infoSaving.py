@@ -74,7 +74,7 @@ class InfoSaving:
         # -1 being returned means that there was not a matching record found in the array 
         return -1
 
-    def writeListToFile(self,entriesList):
+    def writeListToFile(self, entriesList):
         textFormat = ""
 
         # open the text file that will be read into

@@ -65,7 +65,8 @@ def __ai_game(difficulty):
             handicap = 2
         weights[best_legal_move_index] = handicap
 
-        index = random_choice(legal_moves, weights)
+        # Pick weighted move
+        index = random_choice(legal_moves, weights)  # pyright: ignore[reportArgumentType]
         ai.game.perform_move(index, "o")
         print("##################")
         ai.game.display()
@@ -85,7 +86,7 @@ def __ai_game(difficulty):
         print("Draw!")
 
 
-def random_choice(items: list | tuple, weights: list[int]):
+def random_choice(items: list[int] | tuple[int], weights: list[int]) -> int:  # pyright: ignore[reportMissingTypeArgument]
     if len(items) != len(weights):
         raise Exception(
             f"Input Mistmatch: expected size {len(items)} but got {len(weights)}"
