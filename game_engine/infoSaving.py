@@ -1,30 +1,17 @@
 class InfoSaving:
-    textFileDirectory:str = ""
+    textFileDirectory:str
     
     def __init__(self) -> None:
         # Default initialisation for completeness
         self.textFileDirectory = ""
 
-    # copied over from server code
-    # each record will be an object of this class
-    class Entry:
-        name:str
-        wins:int
-        losses:int
-        def __init__(self) -> None:
-            # Default initialisation for completeness
-            self.name = ""
-            self.wins = 0
-            self.losses = 0
-
-        def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
-            return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
+    
 
     # turn a text file with each record split by a line and the data split by commas into an array of Entry
     def readFile(self):
-        entries:list[InfoSaving.Entry] = []
+        entries:list[Entry] = []
 
-        fileWrapper = open(InfoSaving.textFileDirectory, "r")
+        fileWrapper = open(self.textFileDirectory, "r")
         
         # get each line as an individual string in a list
         lines = fileWrapper.read().split('\n')
@@ -45,7 +32,7 @@ class InfoSaving:
         # for each line
         for i in data:
             # create a new entry for a temporary store the information
-            newEntry:InfoSaving.Entry = InfoSaving.Entry()
+            newEntry:Entry = Entry()
 
             # for each piece of data
             for j in i:
@@ -70,7 +57,7 @@ class InfoSaving:
         return entries
 
     # check to see if there is a record with a matching name already in the list, return the position if there is.  
-    def checkForExistingPlayer(entryList, name:str):
+    def checkForExistingPlayer(self, entryList, name:str):
         # to keep the position in the array
         counter:int = 0
 
@@ -87,11 +74,11 @@ class InfoSaving:
         # -1 being returned means that there was not a matching record found in the array 
         return -1
 
-    def writeListToFile(entriesList:list[InfoSaving.Entry]):
+    def writeListToFile(self,entriesList):
         textFormat = ""
 
         # open the text file that will be read into
-        with open(InfoSaving.textFileDirectory, "w") as textFile:
+        with open(self.textFileDirectory, "w") as textFile:
 
             # for every entry 
             for i in entriesList:
@@ -110,14 +97,14 @@ class InfoSaving:
     def addScore(self, name:str, isWin:bool):
 
         # get the file in the form of an array
-        entriesList = InfoSaving.readFile(InfoSaving.textFileDirectory)
+        entriesList = self.readFile()
 
         # find where in the array the desired player's record is, if it is not found, -1 is returned
-        arrayPosition = InfoSaving.checkForExistingPlayer(entriesList, name) 
+        arrayPosition = self.checkForExistingPlayer(entriesList, name) 
 
         # add a new record with the new name
         if (arrayPosition == -1):
-            newEntry:InfoSaving.Entry = InfoSaving.Entry()
+            newEntry:Entry = Entry()
             newEntry.name = name
             entriesList.append(newEntry)
             
@@ -130,7 +117,22 @@ class InfoSaving:
         else:
             entriesList[arrayPosition].losses = entriesList[arrayPosition].losses + 1
         
-        InfoSaving.writeListToFile(entriesList)
+        self.writeListToFile(entriesList)
+
+# copied over from server code
+# each record will be an object of this class
+class Entry:
+    name:str
+    wins:int
+    losses:int
+    def __init__(self) -> None:
+        # Default initialisation for completeness
+        self.name = ""
+        self.wins = 0
+        self.losses = 0
+
+    def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
+        return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
 
 #test:InfoSaving = InfoSaving()
 #InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
