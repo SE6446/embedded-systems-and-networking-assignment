@@ -1,27 +1,22 @@
-from socket import socket
-
-
 from socket import *
 
 
 from network import WLAN
-
+from utime import sleep
 
 import network 
-#import socket
 
-from time import sleep  # pyright: ignore[reportUnknownVariableType]
-
-def connect(ssid:str|None = None, password:str|None = None) -> network.WLAN:
-    wlan = network.WLAN(network.STA_IF)
+def connect(ssid, password) -> WLAN:
+    wlan: WLAN = WLAN(network.STA_IF)
     wlan.active(True)
-    wlan.connect(ssid,password)
+    wlan.connect(ssid, password)
     while wlan.isconnected() == False:
-        print("Waiting connection")
+        print("Waiting a connection...")
         sleep(1)
-    ifconfig: tuple[str,str,str,str] = wlan.ifconfig()
-    print(f"Connected! ifconfig: IP:{ifconfig[0]}, Subnet mask {ifconfig[1]}, Gateway: {ifconfig[2]}, DNS: {ifconfig[3]}")
+    config: tuple[str, str, str, str] = wlan.ifconfig()
+    print(f"Connected to {config[2]} with IP: {config[0]}, Subnet mask: {config[1]} and DNS of: {config[3]}")
     return wlan
+
 
 def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     ip: str = wlan.ifconfig()[0]
@@ -46,9 +41,8 @@ def load_template(player_name, wins, losses)-> str:
 
 def create_webpage() -> str:
     raise NotImplementedError()
-    #TODO How this works is that it takes the templates and contstructs the leaderboard and rest of the website
-    #See: https://stackoverflow.com/questions/44757222/transform-string-to-f-string
-    return ""  # pyright: ignore[reportUnreachable]
+    return ""
+
 
 def serve(connection:socket):
     while True:
@@ -71,4 +65,3 @@ if __name__ == "__main__":
         request = str(request)
         client.send("Hi!")
         client.close()
-
