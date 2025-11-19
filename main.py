@@ -143,6 +143,15 @@ def server_thread():
 def __server():
     pass
 
+# Ensure the scores file exists.
+try:
+    with open("scores.txt", "r") as f:
+        pass
+except:
+    with open("scores.txt", "w") as f:
+        f.write("CPU,0,0") #Add CPU as a default
+
+    
 
 _ = _thread.start_new_thread(game_thread, ())  # pyright: ignore[reportUnknownMemberType, reportAny]
 _ = _thread.start_new_thread(server_thread, ())  # pyright: ignore[reportUnknownMemberType, reportAny]
