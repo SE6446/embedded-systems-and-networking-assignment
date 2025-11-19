@@ -4,6 +4,9 @@ from socket import *
 from network import WLAN
 from utime import sleep
 
+from game_engine.infoSaving import Entry, InfoSaving as infoManager
+from game_engine.infoSaving import Entry
+
 import network 
 
 def connect(ssid, password) -> WLAN:
@@ -29,19 +32,26 @@ def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     print(connection)
     return connection
 
-def load_template(player_name, wins, losses)-> str:
+def load_template(entry:Entry)-> str:
     #TODO return the HTML tags to help construct the leaderboard itself.
     return f"""
     <tr>
-        <td>{player_name}</td>
-        <td>{wins}</td>
-        <td>{losses}</td>
+        <td>{entry.name}</td>
+        <td>{entry.wins}</td>
+        <td>{entry.losses}</td>
     </tr>
     """  
 
-def create_webpage() -> str:
-    raise NotImplementedError()
-    return ""
+def create_webpage(textFile:str) -> str:
+    fileManager = infoManager(textFile)
+    entry_list: list[Entry] = fileManager.readFile()
+    del fileManager
+    with open("main.html","r") as file:
+        html:str = file.read()
+        leaderboard = ""
+        for entry in entry_list:
+            leaderboard: str = leaderboard + load_template(entry) + "\n"
+        return html.format(leaderboard=leaderboard)
 
 
 def serve(connection:socket):
@@ -49,7 +59,7 @@ def serve(connection:socket):
         client = connection.accept()[0]
         request = client.recv(1024)
         request = str(request)
-        client.send(create_webpage())
+        client.send(create_webpage("db.txt"))
         client.close()
 
 

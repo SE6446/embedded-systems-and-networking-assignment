@@ -1,9 +1,9 @@
 class InfoSaving:
     textFileDirectory:str
     
-    def __init__(self) -> None:
+    def __init__(self, textFile:str) -> None:
         # Default initialisation for completeness
-        self.textFileDirectory = ""
+        self.textFileDirectory = textFile
 
     
 
