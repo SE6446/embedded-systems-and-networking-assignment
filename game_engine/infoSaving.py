@@ -1,28 +1,15 @@
 class InfoSaving:
-    textFileDirectory:str = ""
+    textFileDirectory:str
     
-    def __init__(self) -> None:
+    def __init__(self, textFile:str) -> None:
         # Default initialisation for completeness
-        self.textFileDirectory = ""
+        self.textFileDirectory = textFile
 
-    # copied over from server code
-    # each record will be an object of this class
-    class Entry:
-        name:str
-        wins:int
-        losses:int
-        def __init__(self) -> None:
-            # Default initialisation for completeness
-            self.name = ""
-            self.wins = 0
-            self.losses = 0
-
-        def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
-            return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
+    
 
     # turn a text file with each record split by a line and the data split by commas into an array of Entry
     def readFile(self):
-        entries:list = []  # pyright: ignore[reportMissingTypeArgument]
+        entries:list[Entry] = []
 
         fileWrapper = open(self.textFileDirectory, "r")
         
@@ -45,7 +32,7 @@ class InfoSaving:
         # for each line
         for i in data:
             # create a new entry for a temporary store the information
-            newEntry = self.Entry()
+            newEntry:Entry = Entry()
 
             # for each piece of data
             for j in i:
@@ -91,7 +78,7 @@ class InfoSaving:
         textFormat = ""
 
         # open the text file that will be read into
-        with open(InfoSaving.textFileDirectory, "w") as textFile:
+        with open(self.textFileDirectory, "w") as textFile:
 
             # for every entry 
             for i in entriesList:
@@ -117,7 +104,7 @@ class InfoSaving:
 
         # add a new record with the new name
         if (arrayPosition == -1):
-            newEntry:InfoSaving.Entry = InfoSaving.Entry()
+            newEntry:Entry = Entry()
             newEntry.name = name
             entriesList.append(newEntry)
             
@@ -132,15 +119,28 @@ class InfoSaving:
         
         self.writeListToFile(entriesList)
 
+# copied over from server code
+# each record will be an object of this class
+class Entry:
+    name:str
+    wins:int
+    losses:int
+    def __init__(self) -> None:
+        # Default initialisation for completeness
+        self.name = ""
+        self.wins = 0
+        self.losses = 0
 
-if __name__ == "__main__":
-    test:InfoSaving = InfoSaving()
-    InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
-    test.textFileDirectory = "./game_engine/testfile.txt"
+    def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
+        return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
 
-    test.addScore("a", True)
-    test.addScore("b", False)
-    test.addScore("c", True)
-    test.addScore("c", True)
-    test.addScore("c", False)
-    #test.addScore((chars + digits), True)
+#test:InfoSaving = InfoSaving()
+#InfoSaving.textFileDirectory = "./game_engine/testfile.txt"
+#test.textFileDirectory = "./game_engine/testfile.txt"
+
+#test.addScore("a", True)
+#test.addScore("b", False)
+#test.addScore("c", True)
+#test.addScore("c", True)
+#test.addScore("c", False)
+#test.addScore((chars + digits), True)

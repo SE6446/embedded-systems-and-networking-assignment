@@ -1,5 +1,6 @@
+<!--Deprecated, use server/main.html-->
 <!DOCTYPE html>
-
+<html lang="en">
 <head>
     <style>
         header, h1 {
@@ -30,14 +31,19 @@
     <title>Tic-Tac-Toe</title>
 </head>
 <body>
-    <h1>Leaderboard:<h1>
-    <table border="2">
+    <h1>Scoreboard:<h1>
+    <table border="1">
         <tr>
             <th>Player</th>
-            <th>Wins</th>
-            <th>Losses</th>
+            <th>W/L</th>
         </tr>
-        {leaderboard}
-
+        <tr>
+            <td>Player 1 (X)</td>
+            <td id="player1-wl">0.0</td>
+        </tr>
+        <tr>
+            <td>Player 2 (O)</td>
+            <td id="player2-wl">0.0</td>
+        </tr>
     </table>
 </body>

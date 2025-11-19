@@ -19,7 +19,7 @@ def game_thread():
             print("Invalid input, repeating...")
 
 
-def __ai_game(difficulty):
+def __ai_game(difficulty:int):
     # Instantiate the game
     game: Game = Game()
     ai: AI = AI(game)
