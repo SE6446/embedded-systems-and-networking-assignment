@@ -108,25 +108,7 @@ class Game:
             status = True
         elif board[2] == player and board[4] == player and board[6] == player:
             status = True
-
-        if (status == True):
-            infoManager: InfoSaving = InfoSaving("./game_engine/testfile.txt")
-            # get player names 
-            playerXName = "DefaultX"
-            playerOName = "DefaultO"
-            playerXName = input ("Please Enter A Name for Player 1 (X)")
-            playerOName = input ("Please Enter A Name for Player 1 (O)")
-
-            if player == "x":
-                # update score file
-                infoManager.addScore(playerXName, True)
-                infoManager.addScore(playerOName, False)
-
-            if player == "o":
-                # update score file
-                infoManager.addScore(playerXName, False)
-                infoManager.addScore(playerOName, True)
-
+            
         return status
 
     # Deepseek made this cause I was lazy, for clarification I did make edits and review it.

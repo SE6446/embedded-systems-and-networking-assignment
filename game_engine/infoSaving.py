@@ -1,3 +1,5 @@
+from json import dumps, dump
+
 class InfoSaving:
     textFileDirectory:str
     
@@ -55,6 +57,11 @@ class InfoSaving:
             entries.append(newEntry)
 
         return entries
+    
+    def readFileToJSON(self):
+        entries = self.readFile()
+        return dumps([entry.to_dict() for entry in entries])
+        
 
     # check to see if there is a record with a matching name already in the list, return the position if there is.  
     def checkForExistingPlayer(self, entryList, name:str):
@@ -133,6 +140,9 @@ class Entry:
 
     def __str__(self) -> str:  # pyright: ignore[reportImplicitOverride]
         return f"Name: {self.name}, Wins: {self.wins}, Losses: {self.losses}"
+    
+    def to_dict(self) -> dict[str, str | int]:
+        return {"name":self.name, "wins": self.wins, "losses":self.losses}
 
 #test:InfoSaving = InfoSaving()
 #InfoSaving.textFileDirectory = "./game_engine/testfile.txt"

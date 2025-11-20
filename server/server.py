@@ -1,6 +1,5 @@
 from socket import *
 
-
 from network import WLAN
 from utime import sleep
 
@@ -19,7 +18,7 @@ def connect(ssid:str, password:str) -> WLAN:
     print(f"Connected to {config[2]} with IP: {config[0]}, Subnet mask: {config[1]} and DNS of: {config[3]}")
     return wlan
 
-
+#Deprecated
 def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     ip: str = wlan.ifconfig()[0]
     address: tuple[str, int] = (ip, port)
@@ -31,6 +30,7 @@ def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     print(connection)
     return connection
 
+#Deprecated
 def __load_template(entry:Entry)-> str:
     #TODO return the HTML tags to help construct the leaderboard itself.
     return f"""
@@ -41,7 +41,8 @@ def __load_template(entry:Entry)-> str:
     </tr>
     """  
 
-def __create_webpage(textFile:str) -> str:
+#Deprecated, kept around for reference
+def __create_webpage(textFile:str) -> str: 
     fileManager: infoManager = infoManager(textFile)
     entry_list: list[Entry] = fileManager.readFile()
     del fileManager
@@ -51,16 +52,6 @@ def __create_webpage(textFile:str) -> str:
         for entry in entry_list:
             leaderboard: str = leaderboard + __load_template(entry) + "\n"
         return html.format(leaderboard=leaderboard)
-
-
-def serve(connection:socket, text_file:str):
-    while True:
-        client = connection.accept()[0]
-        request = client.recv(1024)
-        request = str(request)
-        client.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
-        client.send(__create_webpage(text_file))
-        client.close()
 
 if __name__ == "__main__":
     ssid = ""

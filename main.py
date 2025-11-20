@@ -4,11 +4,25 @@ from random import uniform
 import asyncio
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
+from game_engine.infoSaving import InfoSaving
 from hardware_interface import get_key_input, update_matrix, clear_matrix # pyright: ignore[reportPrivateLocalImportUsage]
-from server.server import connect, open_socket, serve
+from server.server import connect
 from machine import Pin
+import urequests as requests
 
 led = Pin("LED", Pin.OUT)
+game_matrix: list[list[int]] = [[0,0,0],[0,0,0],[0,0,0]]  # pyright: ignore[reportRedeclaration]
+
+def set_matrix(input_matrix:list[list[int]])->None:
+    global game_matrix
+    game_matrix: list[list[int]] = input_matrix
+    print(game_matrix)
+
+def __render_matrix():
+    global game_matrix
+    while True:
+        update_matrix(game_matrix)
+
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
@@ -19,6 +33,7 @@ def __get_index_from_input() -> int:
 
 
 def game_thread():
+    global ip
     print("game")
     while True:
         opponent: str = get_key_input()
@@ -27,12 +42,27 @@ def game_thread():
             while difficulty not in range(1, 4):
                 difficulty = int(input("WRONG!\nInput difficulty: 1-3"))
             __ai_game(difficulty)
+            #At the end of each game we take the file, convert it to JSON and send it to the server.
+            infoManager = InfoSaving("./scores.txt")
+            jsonreturn:str = infoManager.readFileToJSON()
+            r = requests.post(ip, data={"json":jsonreturn})
+            if r.status != 200:
+                print("Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload")
         elif opponent == "#":
             __human_game()
+            #At the end of each game we take the file, convert it to JSON and send it to the server.
+            infoManager = InfoSaving("./scores.txt")
+            jsonreturn: str = infoManager.readFileToJSON()
+            r= requests.post(ip, data={"json":jsonreturn})
+            if r.status != 200:
+                print("Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload")
+
         else:
             print("Invalid input, repeating...")
         
         sleep(0.2)
+
+
 
 
 def __ai_game(difficulty:int):
@@ -56,7 +86,7 @@ def __ai_game(difficulty:int):
             
         print("##################")
         ai.game.display()
-        update_matrix(led_matrix_converter())
+        set_matrix(led_matrix_converter())
 
         # print(ai.game.is_won("x"))
         # print(ai.game.is_won("o"))
@@ -94,17 +124,29 @@ def __ai_game(difficulty:int):
         if index != best_index:
             print("Blunder!")
         print(ai.game.to_led_matrix())
-        update_matrix(led_matrix_converter())
+        set_matrix(led_matrix_converter())
         print(
             f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
         )
         led.off()
 
     ai.game.display()
+    infoManager: InfoSaving = InfoSaving("./scores.txt")
+    # get player names 
+    playerXName = "DefaultX"
+    playerXName = input ("Please Enter A Name for Player 1 (X)")
+    playerOName = "CPU"     
+        
+
     if ai.game.is_won("x"):
         print("Human win")
+        # update score file
+        infoManager.addScore(playerXName, True)
+        infoManager.addScore(playerOName, False)
     elif ai.game.is_won("o"):
         print("AI win")
+        infoManager.addScore(playerXName, False)
+        infoManager.addScore(playerOName, True)
     else:
         print("Draw!")
 
@@ -142,7 +184,7 @@ def __human_game():
         game.perform_move(index, "x")
         print("##################")
         game.display()
-        update_matrix(led_matrix_converter())
+        set_matrix(led_matrix_converter())
 
 
         if game.is_won("x") or game.is_won("o") or len(game.empty_space()) == 0:
@@ -157,22 +199,37 @@ def __human_game():
             index: int = __get_index_from_input()
         game.perform_move(index, "o")
         game.display()
-        update_matrix(led_matrix_converter())
+        set_matrix(led_matrix_converter())
+    
+    infoManager: InfoSaving = InfoSaving("./scores.txt")
 
-
+    playerXName = "DefaultX"
+    playerXName = input ("Please Enter A Name for Player 1 (X)")
+    playerOName = "DefaultO" 
+    playerOName = input("Please Enter A Name for Player 2 (O)")
     if game.is_won("x"):
-        print("Human win")
+        print(f"{playerXName} wins!")
+        infoManager.addScore(playerXName, True)
+        infoManager.addScore(playerOName, False)
+
     elif game.is_won("o"):
-        print("AI win")
+        print(f"{playerOName} win")
+        infoManager.addScore(playerXName, False)
+        infoManager.addScore(playerOName, True)
+
     else:
         print("Draw!")
 
 
-def server_thread():
-    print("Server started")
-    wlan = connect(ssid="GalAM4a47", password="pitb3872")
-    socket = open_socket(wlan)
-    serve(socket, "scores.txt")
+
+
+wlan = connect(ssid="RHO6298", password="Jet2Holiday")
+ifconfig = wlan.ifconfig()
+ip = ifconfig[2]
+
+_thread.start_new_thread(__render_matrix, ())
+
+
 
 print("Commencing health check")
 clear_matrix()
@@ -205,15 +262,15 @@ try:
     ]
 
 
-    update_matrix(frame1)
+    set_matrix(frame1)
     sleep(1)
-    update_matrix(frame2)
+    set_matrix(frame2)
     sleep(1)
-    update_matrix(frame3)
+    set_matrix(frame3)
     sleep(1)
-    update_matrix(frame4)
+    set_matrix(frame4)
     sleep(1)
-    update_matrix(frame5)
+    set_matrix(frame5)
     sleep(1)
 
 except KeyboardInterrupt:
@@ -229,8 +286,5 @@ except:
     with open("scores.txt", "w") as f:
         f.write("CPU,0,0") #Add CPU as a default
 
-    
-_ = _thread.start_new_thread(game_thread, ())
 
-server_thread()
-   
+game_thread()
