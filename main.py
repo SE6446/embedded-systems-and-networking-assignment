@@ -4,8 +4,11 @@ from random import uniform
 import asyncio
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
-from hardware_interface import get_key_input, update_matrix, clear_matrix
+from hardware_interface import get_key_input, update_matrix, clear_matrix # pyright: ignore[reportPrivateLocalImportUsage]
 from server.server import connect, open_socket, serve
+from machine import Pin
+
+led = Pin("led", Pin.OUT)
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
@@ -65,6 +68,8 @@ def __ai_game(difficulty:int):
             break
 
         # AI move
+        print("AI making move, this may take a while...")
+        led.on()
         _, best_index, _ = ai.minimax("x", "o", 1)
         # Chance to blunder
         # We make a weighted choice, defined by difficulty
@@ -90,6 +95,7 @@ def __ai_game(difficulty:int):
         print(
             f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
         )
+        led.off()
 
     ai.game.display()
     if ai.game.is_won("x"):
@@ -100,7 +106,7 @@ def __ai_game(difficulty:int):
         print("Draw!")
 
 
-def random_choice(items: list[int] | tuple[int], weights: list[int]) -> int:  # pyright: ignore[reportMissingTypeArgument]
+def random_choice(items: list[int] | tuple[int], weights: list[int]) -> int:
     if len(items) != len(weights):
         raise Exception(
             f"Input Mistmatch: expected size {len(items)} but got {len(weights)}"
