@@ -4,6 +4,7 @@ from random import uniform
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
 from hardware_interface import get_key_input, update_matrix, clear_matrix
+from server.server import serve
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
@@ -151,11 +152,8 @@ def __human_game():
 
 
 def server_thread():
-    pass
+    serve(ssid="", password="", text_file="scores.txt")
 
-
-def __server():
-    pass
 
 # Ensure the scores file exists.
 try:
