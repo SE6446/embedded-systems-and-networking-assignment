@@ -38,9 +38,9 @@ def get_key_input() -> str:
             return key
         sleep(0.2)
 
-
-while True:
-    key = scan_keypad()
-    if key:
-        print("Key pressed:", key)
-        sleep(0.3) 
+if __name__ == "__main__":
+    while True:
+        key = scan_keypad()
+        if key:
+            print("Key pressed:", key)
+            sleep(0.3) 

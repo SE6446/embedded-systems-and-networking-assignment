@@ -8,7 +8,7 @@ from game_engine.infoSaving import Entry, InfoSaving as infoManager
 
 import network 
 
-def __connect(ssid:str, password:str) -> WLAN:
+def connect(ssid:str, password:str) -> WLAN:
     wlan: WLAN = WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
@@ -20,7 +20,7 @@ def __connect(ssid:str, password:str) -> WLAN:
     return wlan
 
 
-def __open_socket(wlan:network.WLAN, port:int = 80) -> socket:
+def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     ip: str = wlan.ifconfig()[0]
     address: tuple[str, int] = (ip, port)
     connection: socket = socket()
@@ -53,26 +53,21 @@ def __create_webpage(textFile:str) -> str:
         return html.format(leaderboard=leaderboard)
 
 
-def __serve(connection:socket, text_file:str):
+def serve(connection:socket, text_file:str):
     while True:
         client = connection.accept()[0]
         request = client.recv(1024)
         request = str(request)
+        client.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
         client.send(__create_webpage(text_file))
         client.close()
-
-
-def serve(ssid:str, password:str, text_file:str):
-    wlan = __connect(ssid,password)
-    socket = __open_socket(wlan)
-    __serve(socket, text_file)
 
 if __name__ == "__main__":
     ssid = ""
     password = ""
 
-    wlan: WLAN = __connect(ssid, password)
-    connection = __open_socket(wlan)
+    wlan: WLAN = connect(ssid, password)
+    connection = open_socket(wlan)
     while True:
         client = connection.accept()[0]
         request = client.recv(1024)

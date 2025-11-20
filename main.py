@@ -1,22 +1,24 @@
 import _thread
-import time
+from utime import sleep
 from random import uniform
+import asyncio
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
 from hardware_interface import get_key_input, update_matrix, clear_matrix
-from server.server import serve
+from server.server import connect, open_socket, serve
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
-    while not key.isnumeric():
+    while key not in ["1","2","3","4","5","6","7","8"]:
         key = get_key_input()
     else:
         return int(key) - 1
 
 
 def game_thread():
+    print("game")
     while True:
-        opponent: str = input("CPU (*) or Human (#): ")
+        opponent: str = get_key_input()
         if opponent == "*":
             difficulty = int(input("Input difficulty: 1-3"))
             while difficulty not in range(1, 4):
@@ -26,6 +28,8 @@ def game_thread():
             __human_game()
         else:
             print("Invalid input, repeating...")
+        
+        sleep(0.2)
 
 
 def __ai_game(difficulty:int):
@@ -152,8 +156,54 @@ def __human_game():
 
 
 def server_thread():
-    serve(ssid="", password="", text_file="scores.txt")
+    print("Server started")
+    wlan = connect(ssid="RHO6298", password="Jet2Holiday")
+    socket = open_socket(wlan)
+    serve(socket, "scores.txt")
 
+print("Commencing health check")
+clear_matrix()
+try:
+    # Define one or more frames
+    frame1 = [
+        [2, 2, 2],                      
+        [2, 2, 2],
+        [2, 2, 2]
+    ]
+    frame2 = [
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1]
+    ]
+    frame3 = [
+        [3, 3, 3],
+        [3, 3, 3],
+        [3, 3, 3]
+    ]
+    frame4 = [
+        [1,0,1],
+        [0,2,0],
+        [1,0,1]
+    ]
+    frame5 = [
+        [2,0,2],
+        [0,1,0],
+        [2,0,2]
+    ]
+
+    update_matrix(frame1)
+    sleep(1)
+    update_matrix(frame2)
+    sleep(1)
+    update_matrix(frame3)
+    sleep(1)
+    update_matrix(frame4)
+    sleep(1)
+    update_matrix(frame5)
+    sleep(1)
+
+except KeyboardInterrupt:
+    clear_matrix()
 
 # Ensure the scores file exists.
 try:
@@ -164,14 +214,7 @@ except:
         f.write("CPU,0,0") #Add CPU as a default
 
     
+_ = _thread.start_new_thread(game_thread, ())
 
-_ = _thread.start_new_thread(game_thread, ())  # pyright: ignore[reportUnknownMemberType, reportAny]
-_ = _thread.start_new_thread(server_thread, ())  # pyright: ignore[reportUnknownMemberType, reportAny]
-
-while True:
-    try:
-        time.sleep(1)  # pyright: ignore[reportUnknownMemberType]
-    except KeyboardInterrupt as e:
-        print("Keyboard interrupt, attempting shutdown!")
-        clear_matrix()
-        print(e)
+server_thread()
+   
