@@ -8,11 +8,11 @@ from hardware_interface import get_key_input, update_matrix, clear_matrix # pyri
 from server.server import connect, open_socket, serve
 from machine import Pin
 
-led = Pin("led", Pin.OUT)
+led = Pin("LED", Pin.OUT)
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
-    while key not in ["1","2","3","4","5","6","7","8"]:
+    while key not in ["1","2","3","4","5","6","7","8","9"]:
         key = get_key_input()
     else:
         return int(key) - 1
@@ -204,20 +204,16 @@ try:
         [2,0,2]
     ]
 
-    for i in range(400):
-        update_matrix(frame1)
+
+    update_matrix(frame1)
     sleep(1)
-    for i in range(400):
-        update_matrix(frame2)
+    update_matrix(frame2)
     sleep(1)
-    for i in range(400):
-        update_matrix(frame3)
+    update_matrix(frame3)
     sleep(1)
-    for i in range(400):
-        update_matrix(frame4)
+    update_matrix(frame4)
     sleep(1)
-    for i in range(400):
-        update_matrix(frame5)
+    update_matrix(frame5)
     sleep(1)
 
 except KeyboardInterrupt:

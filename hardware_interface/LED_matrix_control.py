@@ -44,7 +44,8 @@ def update_matrix(matrix: list[list[int]]) -> None:
     """
     #Continuously refresh the matrix display.
     for i in range(3):
-        clear_all_rows()
+        row_pins[i].low()  # Turn off the current row
+        activated = False
         for j in range(3):
             state: int = matrix[i][j]
             red_pin: Pin = col_pins[j*2]      # Red pin
@@ -54,21 +55,26 @@ def update_matrix(matrix: list[list[int]]) -> None:
             if state == 0:  # OFF
                 red_pin.high()
                 green_pin.high()
+                activated = True
             elif state == 1:  # RED
                 red_pin.low()
                 green_pin.high()
+                activated = True
             elif state == 2:  # GREEN
                 red_pin.high()
                 green_pin.low()
+                activated = True
             elif state == 3:  # AMBER (both on)
                 red_pin.low()
                 green_pin.low()
+                activated = True
             else:
                 clear_matrix()
                 raise Exception(f"Invalid state. Expected a value between 0 and 3 inclusive. Got: {state}")
 
         # Turn on this row briefly
-        row_pins[i].high()
+        if activated:
+            row_pins[i].high()
         sleep(2)
 
 if __name__ == "__main__":
@@ -95,15 +101,22 @@ if __name__ == "__main__":
 
         while True:
             # refreshes each frame for a short time
-            for _ in range(400):  
-                update_matrix(frame1)
+            #for _ in range(400):  
+            #    update_matrix(frame1)
+#
+#
+            #for _ in range(400):
+            #    update_matrix(frame2)
 
+            #for _ in range(400):
+            #    update_matrix(frame3)
 
-            for _ in range(400):
-                update_matrix(frame2)
-
-            for _ in range(400):
-                update_matrix(frame3)
+            update_matrix(frame1)
+            sleep(1000)
+            update_matrix(frame2)
+            sleep(1000)
+            update_matrix(frame3)
+            sleep(1000)
 
 
 
