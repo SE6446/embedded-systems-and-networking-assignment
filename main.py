@@ -3,6 +3,14 @@ import time
 from random import uniform
 
 from game_engine import AI, Game  # pyright: ignore[reportPrivateLocalImportUsage]
+from hardware_interface import get_key_input, update_matrix, clear_matrix
+
+def __get_index_from_input() -> int:
+    key: str = get_key_input()
+    while not key.isnumeric():
+        key = get_key_input()
+    else:
+        return int(key) - 1
 
 
 def game_thread():
@@ -23,6 +31,7 @@ def __ai_game(difficulty:int):
     # Instantiate the game
     game: Game = Game()
     ai: AI = AI(game)
+    led_matrix_converter = ai.game.to_led_matrix
 
     ai.game.display()
     while (
@@ -31,13 +40,12 @@ def __ai_game(difficulty:int):
         and len(ai.game.empty_space()) >= 0
     ):
         # Player move
-        move_x: int = int(input("Input x: ")) - 1
-        move_y: int = int(input("Input y: ")) - 1
-        index: int = 3 * move_y + move_x
+        
+        index: int = __get_index_from_input()
         ai.game.perform_move(index, "x")
         print("##################")
         ai.game.display()
-        print(ai.game.to_led_matrix())
+        update_matrix(led_matrix_converter())
 
         # print(ai.game.is_won("x"))
         # print(ai.game.is_won("o"))
@@ -73,6 +81,7 @@ def __ai_game(difficulty:int):
         if index != best_index:
             print("Blunder!")
         print(ai.game.to_led_matrix())
+        update_matrix(led_matrix_converter())
         print(
             f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
         )
@@ -107,27 +116,32 @@ def random_choice(items: list[int] | tuple[int], weights: list[int]) -> int:  # 
 
 def __human_game():
     game = Game()
-
+    led_matrix_converter = game.to_led_matrix
     game.display()
     while not game.is_won("x") or not game.is_won("o") and len(game.empty_space()) >= 0:
         print("Player X turn: ")
-        move_x: int = int(input("Input x: ")) - 1
-        move_y: int = int(input("Input y: ")) - 1
-        index: int = 3 * move_y + move_x
+        
+        
+        index: int = __get_index_from_input()
         game.perform_move(index, "x")
         print("##################")
         game.display()
+        update_matrix(led_matrix_converter())
+
 
         if game.is_won("x") or game.is_won("o") or len(game.empty_space()) == 0:
             # print("break")
             break
 
         print("Player O turn: ")
-        move_x = int(input("Input x: ")) - 1
-        move_y = int(input("Input y: ")) - 1
-        index = 3 * move_y + move_x
+        
+        
+        index = __get_index_from_input()
         game.perform_move(index, "o")
-    game.display()
+        game.display()
+        update_matrix(led_matrix_converter())
+
+
     if game.is_won("x"):
         print("Human win")
     elif game.is_won("o"):
@@ -157,4 +171,9 @@ _ = _thread.start_new_thread(game_thread, ())  # pyright: ignore[reportUnknownMe
 _ = _thread.start_new_thread(server_thread, ())  # pyright: ignore[reportUnknownMemberType, reportAny]
 
 while True:
-    time.sleep(1)  # pyright: ignore[reportUnknownMemberType]
+    try:
+        time.sleep(1)  # pyright: ignore[reportUnknownMemberType]
+    except KeyboardInterrupt as e:
+        print("Keyboard interrupt, attempting shutdown!")
+        clear_matrix()
+        print(e)

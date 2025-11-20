@@ -5,11 +5,10 @@ from network import WLAN
 from utime import sleep
 
 from game_engine.infoSaving import Entry, InfoSaving as infoManager
-from game_engine.infoSaving import Entry
 
 import network 
 
-def connect(ssid, password) -> WLAN:
+def __connect(ssid:str, password:str) -> WLAN:
     wlan: WLAN = WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
@@ -21,7 +20,7 @@ def connect(ssid, password) -> WLAN:
     return wlan
 
 
-def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
+def __open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     ip: str = wlan.ifconfig()[0]
     address: tuple[str, int] = (ip, port)
     connection: socket = socket()
@@ -32,7 +31,7 @@ def open_socket(wlan:network.WLAN, port:int = 80) -> socket:
     print(connection)
     return connection
 
-def load_template(entry:Entry)-> str:
+def __load_template(entry:Entry)-> str:
     #TODO return the HTML tags to help construct the leaderboard itself.
     return f"""
     <tr>
@@ -42,33 +41,38 @@ def load_template(entry:Entry)-> str:
     </tr>
     """  
 
-def create_webpage(textFile:str) -> str:
-    fileManager = infoManager(textFile)
+def __create_webpage(textFile:str) -> str:
+    fileManager: infoManager = infoManager(textFile)
     entry_list: list[Entry] = fileManager.readFile()
     del fileManager
     with open("main.html","r") as file:
         html:str = file.read()
         leaderboard = ""
         for entry in entry_list:
-            leaderboard: str = leaderboard + load_template(entry) + "\n"
+            leaderboard: str = leaderboard + __load_template(entry) + "\n"
         return html.format(leaderboard=leaderboard)
 
 
-def serve(connection:socket):
+def __serve(connection:socket, text_file:str):
     while True:
         client = connection.accept()[0]
         request = client.recv(1024)
         request = str(request)
-        client.send(create_webpage("db.txt"))
+        client.send(__create_webpage(text_file))
         client.close()
 
+
+def serve(ssid:str, password:str, text_file:str):
+    wlan = __connect(ssid,password)
+    socket = __open_socket(wlan)
+    __serve(socket, text_file)
 
 if __name__ == "__main__":
     ssid = ""
     password = ""
 
-    wlan: WLAN = connect(ssid, password)
-    connection = open_socket(wlan)
+    wlan: WLAN = __connect(ssid, password)
+    connection = __open_socket(wlan)
     while True:
         client = connection.accept()[0]
         request = client.recv(1024)
