@@ -30,6 +30,15 @@ def scan_keypad():
 
     return None
 
+
+def get_key_input() -> str:
+    while True:
+        key: str | None = scan_keypad()
+        if key:
+            return key
+        sleep(0.2)
+
+
 while True:
     key = scan_keypad()
     if key:
