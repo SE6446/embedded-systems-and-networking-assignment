@@ -176,8 +176,11 @@ class Game:
             led_code_board[3:6],
             led_code_board[6:9],
         )
-
+        print(row1)
+        print(row2)
+        print(row3)
         return [row1, row2, row3]
+
 
 
 class Cursor:
