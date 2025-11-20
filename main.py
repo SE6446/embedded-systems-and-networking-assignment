@@ -48,9 +48,12 @@ def __ai_game(difficulty:int):
         and len(ai.game.empty_space()) >= 0
     ):
         # Player move
+        index = -1
+        while index not in ai.game.empty_space():
+            index: int = __get_index_from_input()
         
-        index: int = __get_index_from_input()
-        ai.game.perform_move(index, "x")
+        ai.game.perform_move(index,"x")
+            
         print("##################")
         ai.game.display()
         update_matrix(led_matrix_converter())
@@ -129,11 +132,13 @@ def __human_game():
     game = Game()
     led_matrix_converter = game.to_led_matrix
     game.display()
-    while not game.is_won("x") or not game.is_won("o") and len(game.empty_space()) >= 0:
+    while not game.is_won("x") or not game.is_won("o") and len(game.empty_space()) >= 0:    
         print("Player X turn: ")
         
         
-        index: int = __get_index_from_input()
+        index = -1
+        while index not in game.empty_space():
+            index: int = __get_index_from_input()
         game.perform_move(index, "x")
         print("##################")
         game.display()
@@ -147,7 +152,9 @@ def __human_game():
         print("Player O turn: ")
         
         
-        index = __get_index_from_input()
+        index = -1
+        while index not in game.empty_space():
+            index: int = __get_index_from_input()
         game.perform_move(index, "o")
         game.display()
         update_matrix(led_matrix_converter())

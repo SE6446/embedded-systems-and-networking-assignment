@@ -1,5 +1,5 @@
 from random import randint
-from infoSaving import InfoSaving
+from .infoSaving import InfoSaving
 
 class Game:
     def __init__(self) -> None:
@@ -119,13 +119,13 @@ class Game:
 
             if player == "x":
                 # update score file
-                infoManager.addScore(game.playerXName, True)
-                infoManager.addScore(game.playerOName, False)
+                infoManager.addScore(playerXName, True)
+                infoManager.addScore(playerOName, False)
 
             if player == "o":
                 # update score file
-                infoManager.addScore(game.playerXName, False)
-                infoManager.addScore(game.playerOName, True)
+                infoManager.addScore(playerXName, False)
+                infoManager.addScore(playerOName, True)
 
         return status
 
