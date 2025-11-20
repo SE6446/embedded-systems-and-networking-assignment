@@ -157,7 +157,7 @@ def __human_game():
 
 def server_thread():
     print("Server started")
-    wlan = connect(ssid="RHO6298", password="Jet2Holiday")
+    wlan = connect(ssid="GalAM4a47", password="pitb3872")
     socket = open_socket(wlan)
     serve(socket, "scores.txt")
 
@@ -191,20 +191,27 @@ try:
         [2,0,2]
     ]
 
-    update_matrix(frame1)
+    for i in range(400):
+        update_matrix(frame1)
     sleep(1)
-    update_matrix(frame2)
+    for i in range(400):
+        update_matrix(frame2)
     sleep(1)
-    update_matrix(frame3)
+    for i in range(400):
+        update_matrix(frame3)
     sleep(1)
-    update_matrix(frame4)
+    for i in range(400):
+        update_matrix(frame4)
     sleep(1)
-    update_matrix(frame5)
+    for i in range(400):
+        update_matrix(frame5)
     sleep(1)
 
 except KeyboardInterrupt:
     clear_matrix()
-
+finally:
+    clear_matrix()
+    print("Health check complete")
 # Ensure the scores file exists.
 try:
     with open("scores.txt", "r") as f:
