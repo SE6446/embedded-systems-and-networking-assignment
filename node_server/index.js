@@ -14,7 +14,25 @@ const port = 3000;
 app.use(express.static(__dirname));
 app.use(express.json());
 
-function format_html(html) {}
+function formatHtml(html, scores) {
+  let array = [];
+  for (let i = 0; i < scores.length; i++) {
+    array.push(getTemplate(scores[i]));
+  }
+  leaderboard = array.join("\n");
+  html.format(leaderboard); // This doesn't work
+  return html;
+}
+
+function getTemplate(score) {
+  string = `
+    <tr>
+        <td>${score.name}</td>
+        <td>${score.wins}</td>
+        <td>${score.losses}</td>
+    </tr>
+    `;
+}
 
 app
   .route("/") // Tells the server what to do when we receive an http request from a client
@@ -22,15 +40,17 @@ app
   // GET requests are what browsers use, so we return the HTML
   .get(function (req, res) {
     //We read the index.html file and send it to the client
-    fs.readFile("index.html", function (err, data) {
+    htmlString = fs.readFile("index.html", function (err, data) {
       //Error handling
       if (err) {
         res.status(500).send("Error reading index.html");
         return;
       }
+      return data.toString();
       //There should be a format here to add player scores, but for now we just send the file as is
-      res.status(200).send(data.toString());
     });
+    scores = [{ name: "CPU", wins: 3, losses: 3 }];
+    res.status(200).send(formatHtml(htmlString, scores));
   })
   //POST request is what our Pico sends the server, this will be the contents of scores.txt
   .post(function (req, res) {

@@ -53,7 +53,7 @@ def game_thread():
             # At the end of each game we take the file, convert it to JSON and send it to the server.
             infoManager = InfoSaving("./scores.txt")
             jsonreturn: str = infoManager.readFileToJSON()
-            r = requests.post(ip, data={"json": jsonreturn})
+            r = requests.post(ip, data={"body": jsonreturn})
             if r.status != 200:
                 print(
                     "Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload"
@@ -63,7 +63,7 @@ def game_thread():
             # At the end of each game we take the file, convert it to JSON and send it to the server.
             infoManager = InfoSaving("./scores.txt")
             jsonreturn: str = infoManager.readFileToJSON()
-            r = requests.post(ip, data={"json": jsonreturn})
+            r = requests.post(ip, data={"body": jsonreturn})
             if r.status != 200:
                 print(
                     "Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload"
