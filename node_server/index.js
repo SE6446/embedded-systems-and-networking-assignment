@@ -1,5 +1,6 @@
 const express = require("express");
 const fs = require("fs");
+const { json } = require("stream/consumers");
 const app = express();
 const port = 3000;
 
@@ -54,9 +55,19 @@ app
   })
   //POST request is what our Pico sends the server, this will be the contents of scores.txt
   .post(function (req, res) {
-    json = res.json({ requestBody: req.body });
+    console.log("Received POST request with body:", req.body);
+    jsonRes = req.body
     //TODO: Write this information to scores.json, it is already a json object so just convert it to string an send.
-  });
+    jsonString = JSON.stringify(jsonRes);
+    console.log(jsonString);
+    fs.writeFile("scores.json", jsonString, (err) => {
+      if (err) {
+        res.status(500).send("Error writing to scores.json");
+        return;
+      }
+      res.status(200).send("Scores updated successfully");
+    });
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
