@@ -22,18 +22,9 @@ function formatHtml(html, scores) {
     array.push(getTemplate(scores[i]));
   }
   leaderboard = array.join("\n");
-  html.format(leaderboard); // This doesn't work
+  console.log(leaderboard);
+  //html.format(leaderboard); // This doesn't work
   return html;
-}
-
-function getTemplate(score) {
-  string = `
-    <tr>
-        <td>${score.name}</td>
-        <td>${score.wins}</td>
-        <td>${score.losses}</td>
-    </tr>
-    `;
 }
 
 app
@@ -41,24 +32,37 @@ app
 
   // GET requests are what browsers use, so we return the HTML
   .get(function (req, res) {
-      //We read the index.html file and send it to the client
-      htmlString = fs.readFile("index.html", function (err, data) {
+    //We read the index.html file and send it to the client
+
+    fs.readFile("index.html", function (err, data) {
       //Error handling
       if (err) {
-          res.status(500).send("Error reading index.html");
-          return;
-        }
-      return data.toString();
+        res.status(500).send("Error reading index.html");
+        return;
+      }
+      const scores = JSON.parse(fs.readFileSync("scores.json", "utf8"));
+
+      const rowsHtml = scores
+        .map((score) => {
+          return `
+                <tr>
+                    <td>${score.name}</td>
+                    <td>${score.wins}</td>
+                    <td>${score.losses}</td>
+                </tr>
+        `;
+        })
+        .join("\n");
+      const response = data.toString().replace("{placeholder}", rowsHtml);
+      console.log("Received GET request");
+      res.status(200).send(response);
       //There should be a format here to add player scores, but for now we just send the file as is
     });
-    scores = [{ name: "CPU", wins: 3, losses: 3 }];
-    console.log("Received GET request");
-    res.status(200).send(htmlString);
   })
   //POST request is what our Pico sends the server, this will be the contents of scores.txt
   .post(function (req, res) {
     console.log("Received POST request with body:", req.body);
-    jsonRes = req.body["body"]
+    jsonRes = req.body["body"];
     //TODO: Write this information to scores.json, it is already a json object so just convert it to string an send.
     console.log(jsonRes);
     fs.writeFile("scores.json", jsonRes, (err) => {
@@ -68,7 +72,7 @@ app
       }
       res.status(200).send("Scores updated successfully");
     });
-});
+  });
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
