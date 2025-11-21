@@ -22,7 +22,7 @@ game_matrix: list[list[int]] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]  # pyright: ign
 def set_matrix(input_matrix: list[list[int]]) -> None:
     global game_matrix
     game_matrix: list[list[int]] = input_matrix
-    print(game_matrix)
+    #print(game_matrix)
 
 
 def __render_matrix():
@@ -44,8 +44,8 @@ def __get_index_from_input() -> int:
 
 def game_thread():
     global ip
-    print("game")
     while True:
+        print("Choose your opponent, * for CPU, # for human")
         opponent: str = get_key_input()
         if opponent == "*":
             print("Input difficulty: 1-3")
@@ -53,12 +53,13 @@ def game_thread():
             while difficulty not in range(1, 4):
                 print("WRONG!\nInput difficulty: 1-3")
                 difficulty = __get_index_from_input()
+            print("Recieved")
             sleep(2)
             __ai_game(difficulty)
             # At the end of each game we take the file, convert it to JSON and send it to the server.
             infoManager = InfoSaving("./scores.txt")
             jsonreturn: str = infoManager.readFileToJSON()
-            _ = requests.post(ip, data={"body":jsonreturn})
+            _ = requests.post(ip, json={"body":jsonreturn})
         elif opponent == "#":
             __human_game()
             # At the end of each game we take the file, convert it to JSON and send it to the server.
@@ -79,6 +80,7 @@ def __ai_game(difficulty: int):
     led_matrix_converter = ai.game.to_led_matrix
 
     ai.game.display()
+    
     while (
         not ai.game.is_won("x")
         or not ai.game.is_won("o")
@@ -91,8 +93,8 @@ def __ai_game(difficulty: int):
 
         ai.game.perform_move(index, "x")
 
-        print("##################")
-        ai.game.display()
+        #print("##################")
+        #ai.game.display()
         set_matrix(led_matrix_converter())
 
         # print(ai.game.is_won("x"))
@@ -110,26 +112,27 @@ def __ai_game(difficulty: int):
         # AI move
         print("AI making move, this may take a while...")
         led.on()
+    
         _, best_index, _ = ai.minimax("x", "o", 1)
-
         # Chance to blunder
         # We make a weighted choice, defined by difficulty
         legal_moves = ai.game.empty_space()
         best_legal_move_index = legal_moves.index(best_index)
         weights = __difficulty_weights(legal_moves, best_legal_move_index, difficulty)
-
         # Pick weighted move
         index = random_choice(legal_moves, weights)  # pyright: ignore[reportArgumentType]
+
         ai.game.perform_move(index, "o")
-        print("##################")
-        ai.game.display()
-        if index != best_index:
-            print("Blunder!")
-        print(ai.game.to_led_matrix())
+    
+        #print("##################")
+        #ai.game.display()
+        #if index != best_index:
+        #    print("Blunder!")
+        #print(ai.game.to_led_matrix())
         set_matrix(led_matrix_converter())
-        print(
-            f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
-        )
+        #print(
+        #    f"Best move {best_index}, chosen move {index}\nLegal moves: {legal_moves}, weights {weights}"
+        #)
         led.off()
 
     ai.game.display()
@@ -200,8 +203,8 @@ def __human_game():
         while index not in game.empty_space():
             index = __get_index_from_input()
         game.perform_move(index, "x")
-        print("##################")
-        game.display()
+        #print("##################")
+        #game.display()
         set_matrix(led_matrix_converter())
 
         if game.is_won("x") or game.is_won("o") or len(game.empty_space()) == 0:
@@ -240,10 +243,10 @@ def __human_game():
 wlan = connect(ssid="RHO6298", password="Jet2Holiday")
 ifconfig = wlan.ifconfig()
 ip: str = "http://" + ifconfig[2] + ":3000/"
-print(ip)
+#print(ip)
 
-r = requests.get(ip)
-print(r)
+#r = requests.get(ip)
+#print(r)
 
 _thread.start_new_thread(__render_matrix, ())
 
