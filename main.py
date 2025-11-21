@@ -15,6 +15,7 @@ from hardware_interface import (  # pyright: ignore[reportPrivateLocalImportUsag
 from server.server import connect
 
 led = Pin("LED", Pin.OUT)
+kill_it = False
 game_matrix: list[list[int]] = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]  # pyright: ignore[reportRedeclaration]
 
 
@@ -26,9 +27,12 @@ def set_matrix(input_matrix: list[list[int]]) -> None:
 
 def __render_matrix():
     global game_matrix
-    while True:
+    global kill_it
+    while not kill_it:
         update_matrix(game_matrix)
-
+        #sleep(0.022)
+    else:
+        clear_matrix()
 
 def __get_index_from_input() -> int:
     key: str = get_key_input()
@@ -45,29 +49,22 @@ def game_thread():
         opponent: str = get_key_input()
         if opponent == "*":
             print("Input difficulty: 1-3")
-            difficulty = int(get_key_input())
+            difficulty = __get_index_from_input()
             while difficulty not in range(1, 4):
                 print("WRONG!\nInput difficulty: 1-3")
-                difficulty = int(get_key_input())
+                difficulty = __get_index_from_input()
+            sleep(2)
             __ai_game(difficulty)
             # At the end of each game we take the file, convert it to JSON and send it to the server.
             infoManager = InfoSaving("./scores.txt")
             jsonreturn: str = infoManager.readFileToJSON()
-            r = requests.post(ip, data={"body": jsonreturn})
-            if r.status != 200:
-                print(
-                    "Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload"
-                )
+            _ = requests.post(ip, data={"body":jsonreturn})
         elif opponent == "#":
             __human_game()
             # At the end of each game we take the file, convert it to JSON and send it to the server.
             infoManager = InfoSaving("./scores.txt")
             jsonreturn: str = infoManager.readFileToJSON()
-            r = requests.post(ip, data={"body": jsonreturn})
-            if r.status != 200:
-                print(
-                    "Uh oh! Looks like we couldn't communicate your changes, don't worry, it'll update on the next upload"
-                )
+            _ = requests.post(ip, json={"body":jsonreturn})
 
         else:
             print("Invalid input, repeating...")
@@ -242,7 +239,11 @@ def __human_game():
 
 wlan = connect(ssid="RHO6298", password="Jet2Holiday")
 ifconfig = wlan.ifconfig()
-ip: str = ifconfig[2] + ":80"
+ip: str = "http://" + ifconfig[2] + ":3000/"
+print(ip)
+
+r = requests.get(ip)
+print(r)
 
 _thread.start_new_thread(__render_matrix, ())
 
@@ -267,6 +268,7 @@ try:
     sleep(1)
     set_matrix(frame5)
     sleep(1)
+    set_matrix([[0,0,0],[0,0,0],[0,0,0]])
 
 except KeyboardInterrupt:
     clear_matrix()
@@ -281,5 +283,11 @@ except:
     with open("scores.txt", "w") as f:
         f.write("CPU,0,0")  # Add CPU as a default
 
+try:
+    game_thread()
+except Exception as e:
+    kill_it = True
+    sleep(1)
+    raise e
 
-game_thread()
+

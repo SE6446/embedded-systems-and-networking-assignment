@@ -1,3 +1,4 @@
+const { log } = require("console");
 const express = require("express");
 const fs = require("fs");
 const { json } = require("stream/consumers");
@@ -12,7 +13,7 @@ const port = 3000;
 // ***
 
 // Tell expressjs we are using static files and json
-app.use(express.static(__dirname));
+//app.use(express.static(__dirname));
 app.use(express.json());
 
 function formatHtml(html, scores) {
@@ -40,27 +41,27 @@ app
 
   // GET requests are what browsers use, so we return the HTML
   .get(function (req, res) {
-    //We read the index.html file and send it to the client
-    htmlString = fs.readFile("index.html", function (err, data) {
+      //We read the index.html file and send it to the client
+      htmlString = fs.readFile("index.html", function (err, data) {
       //Error handling
       if (err) {
-        res.status(500).send("Error reading index.html");
-        return;
-      }
+          res.status(500).send("Error reading index.html");
+          return;
+        }
       return data.toString();
       //There should be a format here to add player scores, but for now we just send the file as is
     });
     scores = [{ name: "CPU", wins: 3, losses: 3 }];
-    res.status(200).send(formatHtml(htmlString, scores));
+    console.log("Received GET request");
+    res.status(200).send(htmlString);
   })
   //POST request is what our Pico sends the server, this will be the contents of scores.txt
   .post(function (req, res) {
     console.log("Received POST request with body:", req.body);
-    jsonRes = req.body
+    jsonRes = req.body["body"]
     //TODO: Write this information to scores.json, it is already a json object so just convert it to string an send.
-    jsonString = JSON.stringify(jsonRes);
-    console.log(jsonString);
-    fs.writeFile("scores.json", jsonString, (err) => {
+    console.log(jsonRes);
+    fs.writeFile("scores.json", jsonRes, (err) => {
       if (err) {
         res.status(500).send("Error writing to scores.json");
         return;
