@@ -12,6 +12,19 @@ winget install --id GitHub.cli
 gh auth login
 ```
 
+
+Just one more thing...
+
+set up a python virtual environment and install the requirements
+
+```powershell
+python -m venv .\venv # This creates a virtual environment, it helps keep our site packages clean. you can replace .\venv with any directory
+
+.\venv\Scripts\activate\ # This tells the command line 'hey, we're working in the virtual environment now
+
+pip install -r requirements.txt --target typings # This installs all the packages listed in environment.txt
+
+deactivate #This tells the command line we are no longer working in the virtual environment
 Be sure to work in the dev branches using git switch.
 ```powershell
 git switch dev-engine

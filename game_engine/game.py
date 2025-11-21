@@ -141,6 +141,28 @@ class Game:
                 rando = randint(0, 8)
             self.board[rando] = "o"
 
+    def to_led_matrix(self) -> list[list[int]]:
+        led_code_board: list[int] = []
+        for space in self.board:
+            if space == "":
+                led_code_board.append(0)
+            elif space == "x":
+                led_code_board.append(1)
+            elif space == "o":
+                led_code_board.append(2)
+            else:
+                led_code_board.append(3)
+                print("WARN: Unexpected variable in board!")
+        row1, row2, row3 = (
+            led_code_board[0:3],
+            led_code_board[3:6],
+            led_code_board[6:9],
+        )
+        print(row1)
+        print(row2)
+        print(row3)
+        return [row1, row2, row3]
+
 
 class Cursor:
     def __init__(self) -> None:
@@ -169,6 +191,7 @@ class Cursor:
 # Adding a test game into __main__ for testing purposes, this won't run when imported
 if __name__ == "__main__":
     game: Game = Game()
+
     game.display()
     if input("Use Cursor? (y/n): ") == "n":
         while (
