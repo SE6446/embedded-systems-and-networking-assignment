@@ -1,5 +1,5 @@
 from random import randint
-from .infoSaving import InfoSaving
+
 
 class Game:
     def __init__(self) -> None:
@@ -108,7 +108,7 @@ class Game:
             status = True
         elif board[2] == player and board[4] == player and board[6] == player:
             status = True
-            
+
         return status
 
     # Deepseek made this cause I was lazy, for clarification I did make edits and review it.
@@ -162,7 +162,6 @@ class Game:
         print(row2)
         print(row3)
         return [row1, row2, row3]
-
 
 
 class Cursor:
